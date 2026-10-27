@@ -14,6 +14,7 @@ export default function ProductDetailCard({
   const [selectedSize, setSelectedSize] = useState('48');
   const [addedAnimation, setAddedAnimation] = useState(false);
   const [expandedAccordion, setExpandedAccordion] = useState('details');
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
   const handleAdd = () => {
     setAddedAnimation(true);
@@ -32,32 +33,55 @@ export default function ProductDetailCard({
   return (
     <aside
       className={`fixed z-30 transition-all duration-500 flex flex-col justify-between overflow-y-auto shadow-2xl
-        /* Mobile: Bottom drawer sheet, leaving top 50vh clear for 3D garment viewing */
-        bottom-0 left-0 right-0 max-h-[52vh] rounded-t-3xl border-t p-5 sm:p-6
+        /* Mobile: Collapsible bottom sheet (h-[148px] peek mode leaves 82% of screen clear for 3D garment viewing; expands to 82vh) */
+        bottom-0 left-0 right-0 ${
+          isMobileExpanded ? 'h-[82vh] max-h-[85vh] p-4 sm:p-5' : 'h-[148px] max-h-[148px] p-3 sm:p-4'
+        } rounded-t-3xl border-t
         /* Desktop: Full-height right sidebar */
-        md:top-0 md:bottom-0 md:left-auto md:right-0 md:w-full md:max-w-md md:max-h-full md:rounded-none md:border-t-0 md:border-l md:p-8
+        md:top-0 md:bottom-0 md:left-auto md:right-0 md:w-full md:max-w-md md:h-full md:max-h-full md:rounded-none md:border-t-0 md:border-l md:p-8
         ${
           isDarkTheme
             ? 'glass-panel-dark border-white/15 text-[#F5EBD7] shadow-black/90'
             : 'glass-panel-ivory border-[#046438]/20 text-[#046438] shadow-[#046438]/15'
         }`}
     >
-      {/* Mobile Drawer Grab Indicator */}
-      <div className="w-12 h-1 rounded-full bg-current opacity-25 mx-auto mb-2.5 md:hidden" />
-      <div className="space-y-6">
+      {/* Mobile Drawer Pull Tab & Expand/Collapse Toggle */}
+      <div className="md:hidden w-full pb-1">
+        {isMobileExpanded ? (
+          <button
+            onClick={() => setIsMobileExpanded(false)}
+            className="w-full flex items-center justify-center space-x-1.5 py-1 mb-1 rounded-lg border border-current/15 bg-current/5 text-[9px] font-mono tracking-widest uppercase transition-opacity active:opacity-60"
+          >
+            <span>COLLAPSE TO VIEW 3D DRESS</span>
+            <ChevronDown size={13} />
+          </button>
+        ) : (
+          <button
+            onClick={() => setIsMobileExpanded(true)}
+            className="w-full flex items-center justify-center space-x-2 py-0.5 group cursor-pointer"
+          >
+            <div className="w-10 h-1 rounded-full bg-current opacity-30 group-hover:opacity-60 transition-opacity" />
+            <span className="text-[9px] font-mono tracking-widest uppercase opacity-75 flex items-center">
+              SPECIFICATIONS & SIZES ∧
+            </span>
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-3.5 md:space-y-6">
         {/* Top Header: Badge, Index & Close Button */}
-        <div className={`flex items-center justify-between pb-4 border-b ${
+        <div className={`flex items-center justify-between pb-2.5 md:pb-4 border-b ${
           isDarkTheme ? 'border-white/10' : 'border-[#046438]/15'
         }`}>
-          <div className="flex items-center space-x-3">
-            <span className={`font-mono text-[10px] tracking-[0.25em] uppercase px-2.5 py-1 rounded border ${
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <span className={`font-mono text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] uppercase px-2 py-0.5 md:px-2.5 md:py-1 rounded border ${
               isDarkTheme 
                 ? 'border-emerald-400/30 text-emerald-300 bg-emerald-950/40' 
                 : 'border-[#046438]/30 text-[#046438] bg-[#046438]/8 font-medium'
             }`}>
               PIECE {piece.indexStr}
             </span>
-            <span className={`font-mono text-[10px] tracking-widest uppercase ${
+            <span className={`font-mono text-[9px] md:text-[10px] tracking-widest uppercase ${
               isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'
             }`}>
               WINTER CAPSULE
@@ -67,23 +91,28 @@ export default function ProductDetailCard({
           <button
             onClick={onClose}
             aria-label="Close product view"
-            className={`p-2 rounded-full border transition-all duration-300 ${
+            className={`p-1.5 md:p-2 rounded-full border transition-all duration-300 ${
               isDarkTheme
                 ? 'border-white/20 text-[#F5EBD7]/70 hover:text-white hover:border-white/40'
                 : 'border-[#046438]/20 text-[#046438]/70 hover:text-[#046438] hover:border-[#046438]/50'
             }`}
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
 
         {/* Title, Price & Tagline */}
-        <div className="space-y-2">
-          <h1 className="font-serif text-2xl md:text-3xl font-medium tracking-tight">
-            {piece.title}
-          </h1>
-          <div className="flex items-baseline space-x-3">
-            <span className="font-serif text-xl md:text-2xl font-semibold">
+        <div className="space-y-1 md:space-y-2">
+          <div className="flex items-baseline justify-between">
+            <h1 className="font-serif text-lg sm:text-2xl md:text-3xl font-medium tracking-tight">
+              {piece.title}
+            </h1>
+            <span className="font-serif text-base sm:text-xl md:text-2xl font-semibold md:hidden">
+              {piece.priceFormatted}
+            </span>
+          </div>
+          <div className="hidden md:flex items-baseline space-x-3">
+            <span className="font-serif text-2xl font-semibold">
               {piece.priceFormatted}
             </span>
             <span className={`font-mono text-[11px] tracking-wider uppercase ${
@@ -92,56 +121,102 @@ export default function ProductDetailCard({
               VAT INCL.
             </span>
           </div>
-          <p className={`text-xs leading-relaxed font-light ${
+          <p className={`text-[11px] md:text-xs leading-relaxed font-light ${
             isDarkTheme ? 'text-[#F5EBD7]/75' : 'text-[#046438]/80'
-          }`}>
+          } ${!isMobileExpanded ? 'line-clamp-1 md:line-clamp-none' : ''}`}>
             {piece.tagline}
           </p>
         </div>
 
-        {/* View Mode Toggle: ON HANGER vs ON MODEL */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-[11px] font-mono tracking-wider uppercase">
-            <span className={isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'}>
-              PERSPECTIVE
-            </span>
-            <span className="font-medium text-[#046438] dark:text-[#F5EBD7]">
-              {viewMode === 'hanger' ? 'ARCHITECTURAL DRAPE' : 'STYLED SILHOUETTE'}
-            </span>
-          </div>
-          <div className={`grid grid-cols-2 p-1 rounded-xl border ${
-            isDarkTheme ? 'bg-black/40 border-white/10' : 'bg-[#046438]/6 border-[#046438]/15'
-          }`}>
+        {/* Mobile Peek Quick Bar (Colorway Swatches + Quick Add Button) */}
+        {!isMobileExpanded && (
+          <div className="flex items-center justify-between pt-1 md:hidden">
+            {/* Color Swatches */}
+            <div className="flex items-center space-x-2">
+              {piece.colors.map((color, idx) => {
+                const isSelected = idx === activeColorIndex;
+                return (
+                  <button
+                    key={color.name}
+                    onClick={() => onSelectColor(idx)}
+                    className={`p-0.5 rounded-full border transition-all ${
+                      isSelected
+                        ? isDarkTheme ? 'border-white scale-110' : 'border-[#046438] scale-110'
+                        : 'border-transparent'
+                    }`}
+                    title={color.name}
+                  >
+                    <span
+                      className="block w-5 h-5 rounded-full border border-black/15 shadow-sm"
+                      style={{ backgroundColor: color.hex }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Quick Add To Bag button */}
             <button
-              onClick={() => setViewMode('hanger')}
-              className={`py-2 rounded-lg font-mono text-[10px] tracking-widest uppercase transition-all duration-300 ${
-                viewMode === 'hanger'
-                  ? isDarkTheme
-                    ? 'bg-white/20 text-[#F5EBD7] shadow'
-                    : 'bg-[#046438] text-[#F5EBD7] shadow'
+              onClick={handleAdd}
+              disabled={addedAnimation}
+              className={`px-4 py-2 rounded-xl font-mono text-[10px] tracking-widest uppercase font-semibold shadow transition-all ${
+                addedAnimation
+                  ? 'bg-emerald-700 text-white'
                   : isDarkTheme
-                  ? 'text-[#F5EBD7]/60 hover:text-white'
-                  : 'text-[#046438]/70 hover:text-[#046438]'
+                  ? 'bg-[#F5EBD7] text-[#046438]'
+                  : 'bg-[#046438] text-[#F5EBD7]'
               }`}
             >
-              ON HANGER
-            </button>
-            <button
-              onClick={() => setViewMode('model')}
-              className={`py-2 rounded-lg font-mono text-[10px] tracking-widest uppercase transition-all duration-300 ${
-                viewMode === 'model'
-                  ? isDarkTheme
-                    ? 'bg-white/20 text-[#F5EBD7] shadow'
-                    : 'bg-[#046438] text-[#F5EBD7] shadow'
-                  : isDarkTheme
-                  ? 'text-[#F5EBD7]/60 hover:text-white'
-                  : 'text-[#046438]/70 hover:text-[#046438]'
-              }`}
-            >
-              ON MODEL
+              {addedAnimation ? 'ADDED' : `ADD • ${piece.priceFormatted}`}
             </button>
           </div>
-        </div>
+        )}
+
+        {/* Full Details: Always shown on desktop (md:block), shown on mobile only when expanded */}
+        <div className={`space-y-4 md:space-y-6 ${!isMobileExpanded ? 'hidden md:block' : 'block'}`}>
+          {/* View Mode Toggle: ON HANGER vs ON MODEL */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-[11px] font-mono tracking-wider uppercase">
+              <span className={isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'}>
+                PERSPECTIVE
+              </span>
+              <span className="font-medium text-[#046438] dark:text-[#F5EBD7]">
+                {viewMode === 'hanger' ? 'ARCHITECTURAL DRAPE' : 'STYLED SILHOUETTE'}
+              </span>
+            </div>
+            <div className={`grid grid-cols-2 p-1 rounded-xl border ${
+              isDarkTheme ? 'bg-black/40 border-white/10' : 'bg-[#046438]/6 border-[#046438]/15'
+            }`}>
+              <button
+                onClick={() => setViewMode('hanger')}
+                className={`py-2 rounded-lg font-mono text-[10px] tracking-widest uppercase transition-all duration-300 ${
+                  viewMode === 'hanger'
+                    ? isDarkTheme
+                      ? 'bg-white/20 text-[#F5EBD7] shadow'
+                      : 'bg-[#046438] text-[#F5EBD7] shadow'
+                    : isDarkTheme
+                    ? 'text-[#F5EBD7]/60 hover:text-white'
+                    : 'text-[#046438]/70 hover:text-[#046438]'
+                }`}
+              >
+                ON HANGER
+              </button>
+              <button
+                onClick={() => setViewMode('model')}
+                className={`py-2 rounded-lg font-mono text-[10px] tracking-widest uppercase transition-all duration-300 ${
+                  viewMode === 'model'
+                    ? isDarkTheme
+                      ? 'bg-white/20 text-[#F5EBD7] shadow'
+                      : 'bg-[#046438] text-[#F5EBD7] shadow'
+                    : isDarkTheme
+                    ? 'text-[#F5EBD7]/60 hover:text-white'
+                    : 'text-[#046438]/70 hover:text-[#046438]'
+                }`}
+              >
+                ON MODEL
+              </button>
+            </div>
+          </div>
 
         {/* Colorway Swatches with GLSL Wipe Trigger */}
         <div className="space-y-2.5">
@@ -371,12 +446,13 @@ export default function ProductDetailCard({
             )}
           </div>
         </div>
+        </div>
       </div>
 
       {/* Footer Atelier Note */}
-      <div className={`pt-6 border-t font-mono text-[9px] tracking-[0.25em] uppercase text-center ${
+      <div className={`pt-4 md:pt-6 border-t font-mono text-[9px] tracking-[0.25em] uppercase text-center ${
         isDarkTheme ? 'border-white/10 text-[#F5EBD7]/50' : 'border-[#046438]/15 text-[#046438]/60 font-medium'
-      }`}>
+      } ${!isMobileExpanded ? 'hidden md:block' : 'block'}`}>
         HANDCRAFTED IN PARIS & MILAN • EDITION OF 40 PIECES
       </div>
     </aside>

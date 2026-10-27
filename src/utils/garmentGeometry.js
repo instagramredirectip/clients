@@ -395,6 +395,19 @@ export function loadRealGarmentModel(modelUrl, targetGarmentBody, onLoaded) {
               if (!mat.userData.origColor && mat.color) {
                 mat.userData.origColor = mat.color.clone();
               }
+              // Mobile VRAM optimization: disable CPU mipmap generation on large 2K/4K textures
+              if (mat.map) {
+                mat.map.generateMipmaps = false;
+                mat.map.minFilter = THREE.LinearFilter;
+              }
+              if (mat.normalMap) {
+                mat.normalMap.generateMipmaps = false;
+                mat.normalMap.minFilter = THREE.LinearFilter;
+              }
+              if (mat.roughnessMap) {
+                mat.roughnessMap.generateMipmaps = false;
+                mat.roughnessMap.minFilter = THREE.LinearFilter;
+              }
               mat.needsUpdate = true;
             });
           }

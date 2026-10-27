@@ -69,9 +69,9 @@ export default function ThreeCanvas({
     scene.background = new THREE.Color(bgColor);
     scene.fog = new THREE.FogExp2(bgColor, isMobile ? 0.05 : 0.08);
 
-    // Initial camera perspective: adapted for mobile portrait or desktop wide
+    // Initial camera perspective: perfectly calibrated for mobile portrait and desktop wide
     const initialCam = isMobile
-      ? { pos: [0, 0.50, 6.2], look: [0, 0.44, 0], fov: 46 }
+      ? { pos: [0, 0.40, 5.0], look: [0, 0.36, 0], fov: 44 }
       : { pos: [0, 0.35, 4.3], look: [0, 0.30, 0], fov: 40 };
 
     const camera = new THREE.PerspectiveCamera(initialCam.fov, width / height, 0.1, 50);
@@ -79,14 +79,14 @@ export default function ThreeCanvas({
     camera.lookAt(...initialCam.look);
     cameraRef.current = camera;
 
-    // Mobile GPU Optimization: medium precision, capped pixelRatio, disabled heavy PCF shadows
+    // Mobile GPU Optimization: medium precision, disable expensive MSAA on high-DPI, locked 60fps
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: !isMobile,
       powerPreference: 'high-performance',
       precision: isMobile ? 'mediump' : 'highp'
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.0 : 1.75));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = isDarkTheme ? 1.05 : 0.98;
     renderer.shadowMap.enabled = !isMobile;
@@ -100,7 +100,7 @@ export default function ThreeCanvas({
     // --- 2. STUDIO LIGHTING ---
     const ambientLight = new THREE.AmbientLight(
       isDarkTheme ? 0x042416 : 0xEFE5D0,
-      isDarkTheme ? 1.3 : 1.9
+      isDarkTheme ? (isMobile ? 1.6 : 1.3) : (isMobile ? 2.2 : 1.9)
     );
     scene.add(ambientLight);
 
@@ -118,17 +118,22 @@ export default function ThreeCanvas({
     }
     scene.add(keySpot);
 
-    const rimLeft = new THREE.SpotLight(0x087A46, isDarkTheme ? 3.0 : 1.6);
-    rimLeft.position.set(-4.5, 3.2, -1.8);
-    rimLeft.angle = 0.75;
-    rimLeft.penumbra = 0.9;
-    scene.add(rimLeft);
+    // Rim lights: enabled on desktop; omitted on mobile to save fragment shader cost
+    let rimLeft = null;
+    let rimRight = null;
+    if (!isMobile) {
+      rimLeft = new THREE.SpotLight(0x087A46, isDarkTheme ? 3.0 : 1.6);
+      rimLeft.position.set(-4.5, 3.2, -1.8);
+      rimLeft.angle = 0.75;
+      rimLeft.penumbra = 0.9;
+      scene.add(rimLeft);
 
-    const rimRight = new THREE.SpotLight(0xFFECD0, isDarkTheme ? 2.5 : 1.8);
-    rimRight.position.set(4.5, 3.2, -1.8);
-    rimRight.angle = 0.75;
-    rimRight.penumbra = 0.9;
-    scene.add(rimRight);
+      rimRight = new THREE.SpotLight(0xFFECD0, isDarkTheme ? 2.5 : 1.8);
+      rimRight.position.set(4.5, 3.2, -1.8);
+      rimRight.angle = 0.75;
+      rimRight.penumbra = 0.9;
+      scene.add(rimRight);
+    }
 
     const fillLight = new THREE.DirectionalLight(0xffffff, isDarkTheme ? 0.6 : 0.9);
     fillLight.position.set(0, 1, 5);
@@ -236,10 +241,12 @@ export default function ThreeCanvas({
 
     // --- 4B. SMART PROGRESSIVE MODEL LOADING QUEUE (BUTTER SMOOTH) ---
     // Load active piece first so the user sees their current item immediately!
-    // Then load remaining models sequentially one by one without freezing the main thread.
+    // On mobile: avoid network bandwidth exhaustion and GC lag by only loading active piece initially
     const initialQueue = [activePieceIndex];
-    for (let i = 0; i < PIECES.length; i++) {
-      if (!initialQueue.includes(i)) initialQueue.push(i);
+    if (!isMobile) {
+      for (let i = 0; i < PIECES.length; i++) {
+        if (!initialQueue.includes(i)) initialQueue.push(i);
+      }
     }
     modelQueueRef.current = initialQueue;
 
@@ -258,7 +265,7 @@ export default function ThreeCanvas({
         loadedSetRef.current.add(nextIdx);
         loadRealGarmentModel(p.modelPath, item.garmentBody, () => {
           isLoadingModel = false;
-          // Small pause to yield main thread for 60fps responsiveness
+          // Yield main thread for 60fps responsiveness
           setTimeout(processModelQueue, isMobileRef.current ? 400 : 150);
         });
       } else {
@@ -270,6 +277,7 @@ export default function ThreeCanvas({
 
     // --- 5. ANIMATION & RENDER LOOP ---
     let lastTime = performance.now();
+    let spinMomentum = 0;
 
     const animate = (currentTime) => {
       animFrameRef.current = requestAnimationFrame(animate);
@@ -308,8 +316,13 @@ export default function ThreeCanvas({
         const tangent = railCurve.getTangentAt(t);
         const targetRotY = relPos * 0.45;
 
-        // In explore mode, preserve user 360 drag rotation on active item
-        if (!(isExploringRef.current && i === activePieceIndexRef.current)) {
+        // In explore mode, preserve user 360 drag rotation with smooth inertia on active item
+        if (isExploringRef.current && i === activePieceIndexRef.current) {
+          if (!state.isDragging && Math.abs(spinMomentum) > 0.0001) {
+            item.group.rotation.y += spinMomentum;
+            spinMomentum *= 0.93; // buttery tactile friction deceleration
+          }
+        } else {
           item.group.rotation.y = targetRotY;
         }
 
@@ -343,6 +356,7 @@ export default function ThreeCanvas({
       state.dragStartX = e.clientX;
       state.lastDragX = e.clientX;
       state.dragDistance = 0;
+      spinMomentum = 0;
     };
 
     const handlePointerMove = (e) => {
@@ -357,7 +371,9 @@ export default function ThreeCanvas({
       if (isExploringRef.current) {
         const activeItem = garments[activePieceIndexRef.current];
         if (activeItem) {
-          activeItem.group.rotation.y += deltaX * 0.012;
+          const deltaRot = deltaX * (isMobileRef.current ? 0.012 : 0.009);
+          activeItem.group.rotation.y += deltaRot;
+          spinMomentum = deltaRot * 0.75;
         }
         return;
       }
@@ -453,11 +469,11 @@ export default function ThreeCanvas({
       camera.updateProjectionMatrix();
 
       renderer.setSize(w, h);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMob ? 1.25 : 1.75));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMob ? 1.0 : 1.75));
 
       const cam = isExploringRef.current
-        ? (isMob ? { x: 0, y: 0.72, z: 4.2, lx: 0, ly: 0.65 } : { x: 0.52, y: 0.32, z: 2.85, lx: 0.52, ly: 0.30 })
-        : (isMob ? { x: 0, y: 0.50, z: 6.2, lx: 0, ly: 0.44 } : { x: 0, y: 0.35, z: 4.3, lx: 0, ly: 0.30 });
+        ? (isMob ? { x: 0, y: 0.35, z: 3.25, lx: 0, ly: 0.35 } : { x: 0.52, y: 0.32, z: 2.85, lx: 0.52, ly: 0.30 })
+        : (isMob ? { x: 0, y: 0.40, z: 5.0, lx: 0, ly: 0.36 } : { x: 0, y: 0.35, z: 4.3, lx: 0, ly: 0.30 });
 
       camera.position.set(cam.x, cam.y, cam.z);
       camera.lookAt(cam.lx, cam.ly, 0);
@@ -508,10 +524,10 @@ export default function ThreeCanvas({
     const isMobile = isMobileRef.current;
 
     if (isExploring) {
-      // In Mobile explore: Dress framed in the upper 48% window above the bottom drawer!
+      // In Mobile explore: Dress centered and enlarged in the open viewing window above the bottom drawer!
       // In Desktop explore: Dress framed on the left half of the wide screen.
       const target = isMobile
-        ? { x: 0, y: 0.72, z: 4.2, lookX: 0, lookY: 0.65, lookZ: 0 }
+        ? { x: 0, y: 0.35, z: 3.25, lookX: 0, lookY: 0.35, lookZ: 0 }
         : { x: 0.52, y: 0.32, z: 2.85, lookX: 0.52, lookY: 0.30, lookZ: 0 };
 
       gsap.to(camera.position, {
@@ -554,7 +570,7 @@ export default function ThreeCanvas({
     } else {
       // Restore camera to center overview of rail
       const target = isMobile
-        ? { x: 0, y: 0.50, z: 6.2, lookX: 0, lookY: 0.44, lookZ: 0 }
+        ? { x: 0, y: 0.40, z: 5.0, lookX: 0, lookY: 0.36, lookZ: 0 }
         : { x: 0, y: 0.35, z: 4.3, lookX: 0, lookY: 0.30, lookZ: 0 };
 
       gsap.to(camera.position, {

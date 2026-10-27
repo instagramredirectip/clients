@@ -20,8 +20,89 @@ export default function BottomHUD({
     >
       {/* Floating Center Caption & Action Card */}
       <div className="pointer-events-auto w-full max-w-xl mx-auto flex flex-col items-center">
+        {/* MOBILE COMPACT HUD */}
         <div
-          className={`w-full p-4 sm:p-5 md:p-7 rounded-2xl border transition-all duration-500 shadow-2xl ${
+          className={`w-full md:hidden p-3 rounded-2xl border transition-all duration-500 shadow-xl ${
+            isDarkTheme
+              ? 'glass-panel-dark border-white/15 text-[#F5EBD7] shadow-black/80'
+              : 'glass-panel-ivory border-[#046438]/20 text-[#046438] shadow-[#046438]/10'
+          }`}
+        >
+          {/* Row 1: Piece Tag, Title & Price */}
+          <div className="flex items-center justify-between pb-2 border-b border-current/10">
+            <div className="flex items-center space-x-2 truncate pr-2">
+              <span className={`font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 rounded border flex-shrink-0 ${
+                isDarkTheme 
+                  ? 'border-emerald-400/30 text-emerald-300 bg-emerald-950/40' 
+                  : 'border-[#046438]/30 text-[#046438] bg-[#046438]/8 font-medium'
+              }`}>
+                {activePiece.number} / 05
+              </span>
+              <span className="font-serif text-sm font-medium tracking-tight truncate">
+                {activePiece.title}
+              </span>
+            </div>
+            <span className="font-serif text-sm font-semibold tracking-tight flex-shrink-0">
+              {activePiece.priceFormatted}
+            </span>
+          </div>
+
+          {/* Row 2: Carousel Controls + Explore Button */}
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center space-x-1.5">
+              <button
+                onClick={onPrevPiece}
+                disabled={activePieceIndex === 0}
+                aria-label="Previous piece"
+                className={`p-1.5 rounded-full border transition-all ${
+                  activePieceIndex === 0 ? 'opacity-20 border-transparent' : 'border-current/20 active:scale-90'
+                }`}
+              >
+                <ChevronLeft size={14} />
+              </button>
+              <div className="flex items-center space-x-1 px-1">
+                {PIECES.map((p, idx) => (
+                  <button
+                    key={p.id}
+                    onClick={() => onSelectPiece(idx)}
+                    aria-label={`Piece ${p.number}`}
+                    className={`transition-all duration-300 rounded-full ${
+                      idx === activePieceIndex
+                        ? `w-4 h-1 ${isDarkTheme ? 'bg-[#F5EBD7]' : 'bg-[#046438]'}`
+                        : `w-1 h-1 ${isDarkTheme ? 'bg-white/30' : 'bg-[#046438]/30'}`
+                    }`}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={onNextPiece}
+                disabled={activePieceIndex === PIECES.length - 1}
+                aria-label="Next piece"
+                className={`p-1.5 rounded-full border transition-all ${
+                  activePieceIndex === PIECES.length - 1 ? 'opacity-20 border-transparent' : 'border-current/20 active:scale-90'
+                }`}
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+
+            <button
+              onClick={onExplore}
+              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full font-mono text-[10px] tracking-wider uppercase font-semibold shadow transition-transform active:scale-95 ${
+                isDarkTheme
+                  ? 'bg-[#F5EBD7] text-[#046438]'
+                  : 'bg-[#046438] text-[#F5EBD7]'
+              }`}
+            >
+              <span>EXPLORE</span>
+              <ArrowUpRight size={12} />
+            </button>
+          </div>
+        </div>
+
+        {/* DESKTOP HUD */}
+        <div
+          className={`hidden md:block w-full p-6 md:p-7 rounded-2xl border transition-all duration-500 shadow-2xl ${
             isDarkTheme
               ? 'glass-panel-dark border-white/15 text-[#F5EBD7] shadow-black/80'
               : 'glass-panel-ivory border-[#046438]/20 text-[#046438] shadow-[#046438]/10'
@@ -79,8 +160,8 @@ export default function BottomHUD({
           </div>
         </div>
 
-        {/* Carousel Controls: Arrows + Dots */}
-        <div className="flex items-center justify-between w-full max-w-sm mt-5">
+        {/* Desktop Carousel Controls: Arrows + Dots */}
+        <div className="hidden md:flex items-center justify-between w-full max-w-sm mt-5">
           {/* Left Arrow */}
           <button
             onClick={onPrevPiece}
@@ -135,7 +216,7 @@ export default function BottomHUD({
 
         {/* Ambient Interaction Guide */}
         <span
-          className={`font-mono text-[9px] tracking-[0.3em] uppercase mt-4 transition-colors duration-500 ${
+          className={`font-mono text-[9px] tracking-[0.3em] uppercase mt-2.5 md:mt-4 transition-colors duration-500 ${
             isDarkTheme ? 'text-[#F5EBD7]/50' : 'text-[#046438]/60 font-medium'
           }`}
         >
