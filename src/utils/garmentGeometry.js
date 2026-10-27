@@ -413,6 +413,7 @@ export function loadRealGarmentModel(modelUrl, targetGarmentBody, onLoaded) {
     undefined,
     (err) => {
       console.info(`[Atelier Valois] Model '${modelUrl}' not found; using procedural tailored mesh.`, err);
+      if (onLoaded) onLoaded(null);
     }
   );
 }

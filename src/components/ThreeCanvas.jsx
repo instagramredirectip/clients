@@ -56,8 +56,8 @@ export default function ThreeCanvas({
     const container = mountRef.current;
     if (!container) return;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const width = container.clientWidth || window.innerWidth || 800;
+    const height = container.clientHeight || window.innerHeight || 600;
     const isMobile = width < 768 || (width / height) < 1.0;
     isMobileRef.current = isMobile;
 
