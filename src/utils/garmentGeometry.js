@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+const gltfLoader = new GLTFLoader();
 
 /**
  * Builds realistic, tailored 3D luxury garment meshes
@@ -337,4 +340,68 @@ export function buildGarmentMesh(type, material, woodTexture) {
     mannequinGroup,
     coatLength
   };
+}
+
+/**
+ * Loads a real 3D garment model (.glb / .gltf) and fits it to the hanger
+ * @param {string} modelUrl - Path to .glb file in public folder (e.g. '/models/dress-01.glb')
+ * @param {THREE.Group} targetGarmentBody - The garment body container
+ * @param {THREE.ShaderMaterial} [shaderMaterial] - Optional GLSL material for color wipe
+ * @param {Function} [onLoaded] - Callback when model loads successfully
+ */
+export function loadRealGarmentModel(modelUrl, targetGarmentBody, shaderMaterial, onLoaded) {
+  if (!modelUrl) return;
+
+  gltfLoader.load(
+    modelUrl,
+    (gltf) => {
+      const model = gltf.scene;
+
+      // 1. Calculate bounding box of imported model
+      const bbox = new THREE.Box3().setFromObject(model);
+      const size = new THREE.Vector3();
+      bbox.getSize(size);
+      const center = new THREE.Vector3();
+      bbox.getCenter(center);
+
+      // 2. Normalize scale: target length ~1.35m
+      const targetLength = 1.35;
+      const scale = targetLength / (size.y || 1);
+      model.scale.setScalar(scale);
+
+      // Recalculate bounding box after scaling
+      bbox.setFromObject(model);
+      bbox.getSize(size);
+      bbox.getCenter(center);
+
+      // 3. Anchor top of dress/coat directly under hanger at y = -0.24
+      model.position.x = -center.x;
+      model.position.y = -0.24 - bbox.max.y;
+      model.position.z = -center.z;
+
+      // 4. Configure shadows and materials
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          // Apply custom GLSL color-wipe shader if requested
+          if (shaderMaterial) {
+            child.material = shaderMaterial;
+          }
+        }
+      });
+
+      // 5. Hide procedural torso and mount real model
+      targetGarmentBody.children.forEach((c) => {
+        c.visible = false;
+      });
+      targetGarmentBody.add(model);
+
+      if (onLoaded) onLoaded(model);
+    },
+    undefined,
+    (err) => {
+      console.info(`[Atelier Valois] Model '${modelUrl}' not found; using procedural tailored mesh.`);
+    }
+  );
 }

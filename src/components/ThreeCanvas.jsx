@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { PIECES } from '../data/pieces';
 import { createFabricTexture, createWoodTexture, createContactShadowTexture } from '../utils/proceduralTextures';
 import { createGarmentShaderMaterial } from '../utils/garmentShader';
-import { buildGarmentMesh } from '../utils/garmentGeometry';
+import { buildGarmentMesh, loadRealGarmentModel } from '../utils/garmentGeometry';
 
 export default function ThreeCanvas({
   activePieceIndex,
@@ -199,6 +199,11 @@ export default function ThreeCanvas({
         shaderMat,
         woodTex
       );
+
+      // If a real 3D model path (.glb) is provided, load and fit it to hanger
+      if (piece.modelPath) {
+        loadRealGarmentModel(piece.modelPath, garmentBody, shaderMat);
+      }
 
       // Floor Contact Shadow plane
       const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat.clone());
