@@ -144,6 +144,7 @@ export const PIECES = [
     number: '05',
     indexStr: '05 / 05',
     title: 'Le Blouson Architectural Bomber',
+    modelPath: '/models/classic_black_flame_hoodie.glb',
     tagline: 'Waxed silk twill fused with dense Scottish lambswool.',
     price: 1950,
     priceFormatted: '$1,950',
