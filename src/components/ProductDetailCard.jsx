@@ -31,12 +31,19 @@ export default function ProductDetailCard({
 
   return (
     <aside
-      className={`fixed top-0 right-0 bottom-0 z-30 w-full max-w-lg md:max-w-md p-6 md:p-8 flex flex-col justify-between overflow-y-auto shadow-2xl transition-all duration-700 ${
-        isDarkTheme
-          ? 'glass-panel-dark border-l border-white/15 text-[#F5EBD7] shadow-black/90'
-          : 'glass-panel-ivory border-l border-[#046438]/20 text-[#046438] shadow-[#046438]/15'
-      }`}
+      className={`fixed z-30 transition-all duration-500 flex flex-col justify-between overflow-y-auto shadow-2xl
+        /* Mobile: Bottom drawer sheet, leaving top 50vh clear for 3D garment viewing */
+        bottom-0 left-0 right-0 max-h-[52vh] rounded-t-3xl border-t p-5 sm:p-6
+        /* Desktop: Full-height right sidebar */
+        md:top-0 md:bottom-0 md:left-auto md:right-0 md:w-full md:max-w-md md:max-h-full md:rounded-none md:border-t-0 md:border-l md:p-8
+        ${
+          isDarkTheme
+            ? 'glass-panel-dark border-white/15 text-[#F5EBD7] shadow-black/90'
+            : 'glass-panel-ivory border-[#046438]/20 text-[#046438] shadow-[#046438]/15'
+        }`}
     >
+      {/* Mobile Drawer Grab Indicator */}
+      <div className="w-12 h-1 rounded-full bg-current opacity-25 mx-auto mb-2.5 md:hidden" />
       <div className="space-y-6">
         {/* Top Header: Badge, Index & Close Button */}
         <div className={`flex items-center justify-between pb-4 border-b ${

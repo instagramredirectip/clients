@@ -10,16 +10,16 @@ export default function Navbar({
   activePiece
 }) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 pointer-events-none px-6 py-6 md:px-10 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-30 pointer-events-none px-4 py-4 md:px-10 md:py-6 flex items-center justify-between">
       {/* Brand & Edition */}
-      <div className="pointer-events-auto flex items-center space-x-4">
+      <div className="pointer-events-auto flex items-center space-x-3 md:space-x-4">
         <div className="flex flex-col">
-          <span className={`font-serif tracking-[0.25em] text-lg md:text-xl font-semibold transition-colors duration-500 ${
+          <span className={`font-serif tracking-[0.2em] md:tracking-[0.25em] text-base md:text-xl font-semibold transition-colors duration-500 ${
             isDarkTheme ? 'text-[#F5EBD7]' : 'text-[#046438]'
           }`}>
             ATELIER VALOIS
           </span>
-          <span className={`font-mono text-[9px] tracking-[0.3em] uppercase transition-colors duration-500 ${
+          <span className={`font-mono text-[8px] md:text-[9px] tracking-[0.25em] md:tracking-[0.3em] uppercase transition-colors duration-500 ${
             isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'
           }`}>
             WARM IVORY & EMERALD • CAPSULE

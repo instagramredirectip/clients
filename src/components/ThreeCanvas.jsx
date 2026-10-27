@@ -25,6 +25,16 @@ export default function ThreeCanvas({
   const railCurveRef = useRef(null);
   const animFrameRef = useRef(null);
   const lightsRef = useRef({});
+  const isMobileRef = useRef(false);
+  const isExploringRef = useRef(isExploring);
+  isExploringRef.current = isExploring;
+  const activePieceIndexRef = useRef(activePieceIndex);
+  activePieceIndexRef.current = activePieceIndex;
+
+  // Progressive model loading queue
+  const modelQueueRef = useRef([]);
+  const loadedSetRef = useRef(new Set());
+  const processQueueRef = useRef(null);
 
   // Carousel motion physics state
   const carouselState = useRef({
@@ -46,72 +56,80 @@ export default function ThreeCanvas({
     const container = mountRef.current;
     if (!container) return;
 
-    // --- 1. SCENE & CAMERA SETUP ---
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    const isMobile = width < 768 || (width / height) < 1.0;
+    isMobileRef.current = isMobile;
+
+    // --- 1. SCENE & RESPONSIVE CAMERA SETUP ---
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
     const bgColor = isDarkTheme ? 0x072214 : 0xF5EBD7;
     scene.background = new THREE.Color(bgColor);
-    scene.fog = new THREE.FogExp2(bgColor, 0.08);
+    scene.fog = new THREE.FogExp2(bgColor, isMobile ? 0.05 : 0.08);
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    // Initial camera perspective: adapted for mobile portrait or desktop wide
+    const initialCam = isMobile
+      ? { pos: [0, 0.50, 6.2], look: [0, 0.44, 0], fov: 46 }
+      : { pos: [0, 0.35, 4.3], look: [0, 0.30, 0], fov: 40 };
 
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 50);
-    camera.position.set(0, 0.35, 4.3);
-    camera.lookAt(0, 0.30, 0);
+    const camera = new THREE.PerspectiveCamera(initialCam.fov, width / height, 0.1, 50);
+    camera.position.set(...initialCam.pos);
+    camera.lookAt(...initialCam.look);
     cameraRef.current = camera;
 
+    // Mobile GPU Optimization: medium precision, capped pixelRatio, disabled heavy PCF shadows
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      powerPreference: 'high-performance'
+      powerPreference: 'high-performance',
+      precision: isMobile ? 'mediump' : 'highp'
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 1.75));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = isDarkTheme ? 1.05 : 0.98;
-    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.enabled = !isMobile;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    container.appendChild(renderer.domElement);
+    const dom = renderer.domElement;
+    dom.style.touchAction = 'none';
+    container.appendChild(dom);
     rendererRef.current = renderer;
 
     // --- 2. STUDIO LIGHTING ---
-    // Ambient light tuned to Warm Ivory / Emerald
     const ambientLight = new THREE.AmbientLight(
       isDarkTheme ? 0x042416 : 0xEFE5D0,
       isDarkTheme ? 1.3 : 1.9
     );
     scene.add(ambientLight);
 
-    // Overhead Key Spotlight
     const keySpot = new THREE.SpotLight(0xfff8ee, isDarkTheme ? 4.5 : 3.9);
     keySpot.position.set(0, 5.2, 3.5);
     keySpot.angle = 0.65;
     keySpot.penumbra = 0.8;
     keySpot.decay = 1.2;
     keySpot.distance = 18;
-    keySpot.castShadow = true;
-    keySpot.shadow.mapSize.width = 1024;
-    keySpot.shadow.mapSize.height = 1024;
-    keySpot.shadow.bias = -0.0001;
+    keySpot.castShadow = !isMobile;
+    if (!isMobile) {
+      keySpot.shadow.mapSize.width = 1024;
+      keySpot.shadow.mapSize.height = 1024;
+      keySpot.shadow.bias = -0.0001;
+    }
     scene.add(keySpot);
 
-    // Left Rim / Specular Spotlight (Emerald green edge tint)
     const rimLeft = new THREE.SpotLight(0x087A46, isDarkTheme ? 3.0 : 1.6);
     rimLeft.position.set(-4.5, 3.2, -1.8);
     rimLeft.angle = 0.75;
     rimLeft.penumbra = 0.9;
     scene.add(rimLeft);
 
-    // Right Rim Spotlight (Warm ivory specular)
     const rimRight = new THREE.SpotLight(0xFFECD0, isDarkTheme ? 2.5 : 1.8);
     rimRight.position.set(4.5, 3.2, -1.8);
     rimRight.angle = 0.75;
     rimRight.penumbra = 0.9;
     scene.add(rimRight);
 
-    // Front Soft Fill Light
     const fillLight = new THREE.DirectionalLight(0xffffff, isDarkTheme ? 0.6 : 0.9);
     fillLight.position.set(0, 1, 5);
     scene.add(fillLight);
@@ -119,7 +137,6 @@ export default function ThreeCanvas({
     lightsRef.current = { ambientLight, keySpot, rimLeft, rimRight, fillLight };
 
     // --- 3. CURVED METALLIC CHROME RAIL & ARCHITECTURE ---
-    // Cubic 3D curve spanning across the upper viewport
     const railCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(-4.6, 1.15, -1.2),
       new THREE.Vector3(-2.3, 1.25, -0.2),
@@ -137,26 +154,23 @@ export default function ThreeCanvas({
       envMapIntensity: 1.5
     });
     const railMesh = new THREE.Mesh(railGeo, railMat);
-    railMesh.castShadow = true;
-    railMesh.receiveShadow = true;
+    railMesh.castShadow = !isMobile;
+    railMesh.receiveShadow = !isMobile;
     scene.add(railMesh);
 
-    // Chrome End Caps
     const endCapGeo = new THREE.SphereGeometry(0.045, 16, 16);
-    const endCap1 = new THREE.Mesh(endCapGeo, railMat);
-    endCap1.position.copy(railCurve.getPointAt(0));
-    scene.add(endCap1);
+    const cap1 = new THREE.Mesh(endCapGeo, railMat);
+    cap1.position.copy(railCurve.getPointAt(0));
+    scene.add(cap1);
+    const cap2 = new THREE.Mesh(endCapGeo, railMat);
+    cap2.position.copy(railCurve.getPointAt(1));
+    scene.add(cap2);
 
-    const endCap2 = new THREE.Mesh(endCapGeo, railMat);
-    endCap2.position.copy(railCurve.getPointAt(1));
-    scene.add(endCap2);
+    const rodPos1 = railCurve.getPointAt(0.24);
+    const rodPos2 = railCurve.getPointAt(0.76);
+    const ceilingRodGeo = new THREE.CylinderGeometry(0.016, 0.016, 2.8, 16);
+    const ceilingFlangeGeo = new THREE.CylinderGeometry(0.065, 0.065, 0.025, 16);
 
-    // Ceiling Suspension Rods
-    const ceilingRodGeo = new THREE.CylinderGeometry(0.015, 0.015, 2.8, 16);
-    const ceilingFlangeGeo = new THREE.CylinderGeometry(0.075, 0.08, 0.04, 24);
-
-    // Rod 1 (Left)
-    const rodPos1 = railCurve.getPointAt(0.28);
     const rod1 = new THREE.Mesh(ceilingRodGeo, railMat);
     rod1.position.set(rodPos1.x, rodPos1.y + 1.4, rodPos1.z);
     scene.add(rod1);
@@ -164,8 +178,6 @@ export default function ThreeCanvas({
     flange1.position.set(rodPos1.x, rodPos1.y + 2.8, rodPos1.z);
     scene.add(flange1);
 
-    // Rod 2 (Right)
-    const rodPos2 = railCurve.getPointAt(0.72);
     const rod2 = new THREE.Mesh(ceilingRodGeo, railMat);
     rod2.position.set(rodPos2.x, rodPos2.y + 1.4, rodPos2.z);
     scene.add(rod2);
@@ -180,7 +192,6 @@ export default function ThreeCanvas({
 
     const garments = [];
 
-    // Shadow plane geometry
     const shadowGeo = new THREE.PlaneGeometry(1.6, 1.6);
     shadowGeo.rotateX(-Math.PI / 2);
     const shadowMat = new THREE.MeshBasicMaterial({
@@ -200,17 +211,11 @@ export default function ThreeCanvas({
         woodTex
       );
 
-      // If a real 3D model path (.glb) is provided, load and fit it to hanger
-      if (piece.modelPath) {
-        loadRealGarmentModel(piece.modelPath, garmentBody);
-      }
-
-      // Floor Contact Shadow plane
+      // Floor Contact Shadow plane (zero-cost baked shadow)
       const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat.clone());
       shadowMesh.position.set(0, -1.95, 0);
       scene.add(shadowMesh);
 
-      // Store piece metadata on mesh group for raycasting
       group.userData = { pieceIndex: index };
       garmentBody.userData = { pieceIndex: index };
 
@@ -229,6 +234,40 @@ export default function ThreeCanvas({
 
     garmentsRef.current = garments;
 
+    // --- 4B. SMART PROGRESSIVE MODEL LOADING QUEUE (BUTTER SMOOTH) ---
+    // Load active piece first so the user sees their current item immediately!
+    // Then load remaining models sequentially one by one without freezing the main thread.
+    const initialQueue = [activePieceIndex];
+    for (let i = 0; i < PIECES.length; i++) {
+      if (!initialQueue.includes(i)) initialQueue.push(i);
+    }
+    modelQueueRef.current = initialQueue;
+
+    let isLoadingModel = false;
+    const processModelQueue = () => {
+      if (isLoadingModel || modelQueueRef.current.length === 0) return;
+      const nextIdx = modelQueueRef.current.shift();
+      if (loadedSetRef.current.has(nextIdx)) {
+        processModelQueue();
+        return;
+      }
+      const item = garments[nextIdx];
+      const p = PIECES[nextIdx];
+      if (item && p && p.modelPath) {
+        isLoadingModel = true;
+        loadedSetRef.current.add(nextIdx);
+        loadRealGarmentModel(p.modelPath, item.garmentBody, () => {
+          isLoadingModel = false;
+          // Small pause to yield main thread for 60fps responsiveness
+          setTimeout(processModelQueue, isMobileRef.current ? 400 : 150);
+        });
+      } else {
+        processModelQueue();
+      }
+    };
+    processQueueRef.current = processModelQueue;
+    processModelQueue();
+
     // --- 5. ANIMATION & RENDER LOOP ---
     let lastTime = performance.now();
 
@@ -243,7 +282,7 @@ export default function ThreeCanvas({
       const diff = state.targetOffset - state.currentOffset;
       state.currentOffset += diff * Math.min(delta * 9.0, 1.0);
 
-      // Update pendulum swing physics
+      // Pendulum swing physics
       const springK = 28.0;
       const damping = 4.2;
       const displacement = state.pendulumAngle;
@@ -255,44 +294,35 @@ export default function ThreeCanvas({
       state.pendulumAngle += state.pendulumVelocity * delta;
 
       // Update garments positioning along curved rail
-      const totalPieces = PIECES.length; // 5
+      const totalPieces = PIECES.length;
       garments.forEach((item, i) => {
-        // Calculate relative position where 0 = active center piece
         let relPos = i - state.currentOffset;
-        // Wrap around to keep within view bounds cleanly
         while (relPos > totalPieces / 2) relPos -= totalPieces;
         while (relPos < -totalPieces / 2) relPos += totalPieces;
 
-        // Map relPos (-2 to +2) to curve parameter t (0.05 to 0.95)
-        // Center piece is at t = 0.50
         const t = THREE.MathUtils.clamp(0.5 + relPos * 0.20, 0.05, 0.95);
         const curvePoint = railCurve.getPointAt(t);
 
-        // Position group directly on rail hook contact point
         item.group.position.copy(curvePoint);
 
-        // Orient group along curve normal & angle side items inward
         const tangent = railCurve.getTangentAt(t);
-        const angleY = Math.atan2(tangent.z, tangent.x);
-
-        // Center piece faces camera (rot.y = 0), side pieces tilt inward
         const targetRotY = relPos * 0.45;
-        item.group.rotation.y = targetRotY;
 
-        // Apply dynamic pendulum sway on Z-axis
+        // In explore mode, preserve user 360 drag rotation on active item
+        if (!(isExploringRef.current && i === activePieceIndexRef.current)) {
+          item.group.rotation.y = targetRotY;
+        }
+
         const individualPhase = Math.sin(currentTime * 0.002 + i) * 0.008;
         item.group.rotation.z = state.pendulumAngle * (1.0 - Math.abs(relPos) * 0.25) + individualPhase;
 
-        // Scale: active piece = 1.15, side pieces slightly scaled down
         const distFromCenter = Math.abs(relPos);
         const targetScale = Math.max(0.85, 1.15 - distFromCenter * 0.12);
         item.group.scale.setScalar(targetScale);
 
-        // Floor shadow follows garment horizontally
         item.shadowMesh.position.set(curvePoint.x, -1.95, curvePoint.z);
         item.shadowMesh.scale.setScalar(targetScale * (1.0 + Math.abs(state.pendulumAngle) * 0.5));
 
-        // Update shader uniforms
         if (item.shaderMat) {
           item.shaderMat.uniforms.uTime.value = currentTime * 0.001;
         }
@@ -303,12 +333,11 @@ export default function ThreeCanvas({
 
     animFrameRef.current = requestAnimationFrame(animate);
 
-    // --- 6. USER INTERACTIONS (DRAG, SCROLL, RAYCASTING) ---
+    // --- 6. USER INTERACTIONS (TOUCH, DRAG, 360 ROTATE, RAYCASTING) ---
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
     const handlePointerDown = (e) => {
-      if (isExploring) return;
       const state = carouselState.current;
       state.isDragging = true;
       state.dragStartX = e.clientX;
@@ -318,18 +347,26 @@ export default function ThreeCanvas({
 
     const handlePointerMove = (e) => {
       const state = carouselState.current;
-      if (!state.isDragging || isExploring) return;
+      if (!state.isDragging) return;
 
       const deltaX = e.clientX - state.lastDragX;
       state.lastDragX = e.clientX;
       state.dragDistance += Math.abs(deltaX);
 
-      // Sensitivity factor
-      const sensitivity = 0.0028;
+      // In Explore mode: 360-degree interactive horizontal finger/mouse rotation!
+      if (isExploringRef.current) {
+        const activeItem = garments[activePieceIndexRef.current];
+        if (activeItem) {
+          activeItem.group.rotation.y += deltaX * 0.012;
+        }
+        return;
+      }
+
+      // In Overview mode: scroll the curved rail carousel
+      const sensitivity = isMobileRef.current ? 0.0038 : 0.0028;
       state.targetOffset -= deltaX * sensitivity;
       state.currentOffset = state.targetOffset;
 
-      // Add pendulum swing impulse proportional to drag velocity
       state.pendulumVelocity += -deltaX * 0.045;
     };
 
@@ -338,19 +375,19 @@ export default function ThreeCanvas({
       if (!state.isDragging) return;
       state.isDragging = false;
 
-      // Snap to nearest piece index
+      if (isExploringRef.current) return;
+
       const snapped = Math.round(state.targetOffset);
       const clamped = Math.max(0, Math.min(PIECES.length - 1, snapped));
       state.targetOffset = clamped;
 
-      if (clamped !== activePieceIndex) {
+      if (clamped !== activePieceIndexRef.current) {
         setActivePieceIndex(clamped);
       }
     };
 
     const handleClick = (e) => {
       const state = carouselState.current;
-      // If user dragged more than 8 pixels, treat as drag, not click
       if (state.dragDistance > 8) return;
 
       const rect = renderer.domElement.getBoundingClientRect();
@@ -359,10 +396,9 @@ export default function ThreeCanvas({
 
       raycaster.setFromCamera(mouse, camera);
 
-      // Check intersections with garments
       const interactiveMeshes = [];
-      garments.forEach(g => {
-        g.group.traverse(child => {
+      garments.forEach((g) => {
+        g.group.traverse((child) => {
           if (child.isMesh) {
             interactiveMeshes.push(child);
           }
@@ -371,15 +407,14 @@ export default function ThreeCanvas({
 
       const intersects = raycaster.intersectObjects(interactiveMeshes);
       if (intersects.length > 0) {
-        // Find ancestor with pieceIndex
         let obj = intersects[0].object;
-        while (obj && obj.userData.pieceIndex === undefined) {
+        while (obj && obj.userData?.pieceIndex === undefined && obj.parent) {
           obj = obj.parent;
         }
-        if (obj && obj.userData.pieceIndex !== undefined) {
+        if (obj && obj.userData?.pieceIndex !== undefined) {
           const clickedIndex = obj.userData.pieceIndex;
-          if (clickedIndex === activePieceIndex) {
-            if (onPieceClick) onPieceClick(clickedIndex);
+          if (clickedIndex === activePieceIndexRef.current) {
+            if (onPieceClick) onPieceClick();
           } else {
             setActivePieceIndex(clickedIndex);
           }
@@ -388,37 +423,47 @@ export default function ThreeCanvas({
     };
 
     const handleWheel = (e) => {
-      if (isExploring) return;
+      if (isExploringRef.current) return;
       e.preventDefault();
-      const state = carouselState.current;
       const direction = Math.sign(e.deltaY || e.deltaX);
       if (Math.abs(e.deltaY) > 20 || Math.abs(e.deltaX) > 20) {
-        const nextIndex = Math.max(0, Math.min(PIECES.length - 1, activePieceIndex + direction));
-        if (nextIndex !== activePieceIndex) {
+        const nextIndex = Math.max(0, Math.min(PIECES.length - 1, activePieceIndexRef.current + direction));
+        if (nextIndex !== activePieceIndexRef.current) {
           setActivePieceIndex(nextIndex);
         }
       }
     };
 
-    const dom = renderer.domElement;
     dom.addEventListener('pointerdown', handlePointerDown);
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
     dom.addEventListener('click', handleClick);
     dom.addEventListener('wheel', handleWheel, { passive: false });
 
-    // Window Resize Handler
+    // Window Resize Handler (Recalculates FOV & aspect for mobile/desktop)
     const handleResize = () => {
       if (!container || !renderer || !camera) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
+      const isMob = w < 768 || (w / h) < 1.0;
+      isMobileRef.current = isMob;
+
       camera.aspect = w / h;
+      camera.fov = isMob ? 46 : 40;
       camera.updateProjectionMatrix();
+
       renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMob ? 1.25 : 1.75));
+
+      const cam = isExploringRef.current
+        ? (isMob ? { x: 0, y: 0.72, z: 4.2, lx: 0, ly: 0.65 } : { x: 0.52, y: 0.32, z: 2.85, lx: 0.52, ly: 0.30 })
+        : (isMob ? { x: 0, y: 0.50, z: 6.2, lx: 0, ly: 0.44 } : { x: 0, y: 0.35, z: 4.3, lx: 0, ly: 0.30 });
+
+      camera.position.set(cam.x, cam.y, cam.z);
+      camera.lookAt(cam.lx, cam.ly, 0);
     };
     window.addEventListener('resize', handleResize);
 
-    // Cleanup on unmount
     return () => {
       cancelAnimationFrame(animFrameRef.current);
       dom.removeEventListener('pointerdown', handlePointerDown);
@@ -439,13 +484,18 @@ export default function ThreeCanvas({
     const state = carouselState.current;
     if (state.targetOffset !== activePieceIndex) {
       const stepDiff = activePieceIndex - state.targetOffset;
-      // Add realistic pendulum swing kick in direction of movement
       state.pendulumVelocity += -stepDiff * 1.8;
       gsap.to(state, {
         targetOffset: activePieceIndex,
         duration: 0.85,
         ease: 'power3.out'
       });
+    }
+
+    // Prioritize loading current active model if not yet loaded
+    if (!loadedSetRef.current.has(activePieceIndex)) {
+      modelQueueRef.current.unshift(activePieceIndex);
+      if (processQueueRef.current) processQueueRef.current();
     }
   }, [activePieceIndex]);
 
@@ -455,17 +505,23 @@ export default function ThreeCanvas({
     const garments = garmentsRef.current;
     if (!camera || !garments) return;
 
+    const isMobile = isMobileRef.current;
+
     if (isExploring) {
-      // Pan camera so active piece is framed on the left half of viewport
-      // Smoothly pan camera to frame active piece comfortably centered in the left view area
+      // In Mobile explore: Dress framed in the upper 48% window above the bottom drawer!
+      // In Desktop explore: Dress framed on the left half of the wide screen.
+      const target = isMobile
+        ? { x: 0, y: 0.72, z: 4.2, lookX: 0, lookY: 0.65, lookZ: 0 }
+        : { x: 0.52, y: 0.32, z: 2.85, lookX: 0.52, lookY: 0.30, lookZ: 0 };
+
       gsap.to(camera.position, {
-        x: 0.52,
-        y: 0.32,
-        z: 2.85,
+        x: target.x,
+        y: target.y,
+        z: target.z,
         duration: 1.2,
         ease: 'power3.inOut',
         onUpdate: () => {
-          camera.lookAt(0.52, 0.30, 0);
+          camera.lookAt(target.lookX, target.lookY, target.lookZ);
         }
       });
 
@@ -497,14 +553,18 @@ export default function ThreeCanvas({
       });
     } else {
       // Restore camera to center overview of rail
+      const target = isMobile
+        ? { x: 0, y: 0.50, z: 6.2, lookX: 0, lookY: 0.44, lookZ: 0 }
+        : { x: 0, y: 0.35, z: 4.3, lookX: 0, lookY: 0.30, lookZ: 0 };
+
       gsap.to(camera.position, {
-        x: 0,
-        y: 0.35,
-        z: 4.3,
+        x: target.x,
+        y: target.y,
+        z: target.z,
         duration: 1.2,
         ease: 'power3.inOut',
         onUpdate: () => {
-          camera.lookAt(0, 0.30, 0);
+          camera.lookAt(target.lookX, target.lookY, target.lookZ);
         }
       });
 
@@ -554,7 +614,6 @@ export default function ThreeCanvas({
       shaderMat.uniforms.uColorNext.value.set(...newColor.rgb);
       shaderMat.uniforms.uWipeProgress.value = 0.0;
 
-      // Animate vertical laser wave wipe from top to bottom
       gsap.to(shaderMat.uniforms.uWipeProgress, {
         value: 1.0,
         duration: 1.25,
@@ -565,7 +624,6 @@ export default function ThreeCanvas({
       });
     }
 
-    // If active garment has an imported 3D model, handle color tinting smoothly
     const importedModel = activeGarment.garmentBody?.userData?.importedModel;
     if (importedModel) {
       importedModel.traverse((child) => {
@@ -600,7 +658,6 @@ export default function ThreeCanvas({
     if (!activeGarment) return;
 
     if (viewMode === 'model') {
-      // Show mannequin stand and crossfade hanger
       activeGarment.mannequinGroup.visible = true;
       gsap.to(activeGarment.hangerGroup.scale, {
         x: 0.01,
@@ -618,7 +675,6 @@ export default function ThreeCanvas({
         { y: 0, duration: 0.7, ease: 'back.out(1.4)' }
       );
     } else {
-      // Restore wooden hanger view
       activeGarment.hangerGroup.visible = true;
       gsap.to(activeGarment.hangerGroup.scale, {
         x: 1,
@@ -645,7 +701,6 @@ export default function ThreeCanvas({
 
     renderer.toneMappingExposure = isDarkTheme ? 1.05 : 0.98;
 
-    // Transition lights
     if (lights.ambientLight) {
       lights.ambientLight.color.set(isDarkTheme ? 0x042416 : 0xEFE5D0);
       lights.ambientLight.intensity = isDarkTheme ? 1.3 : 1.9;
@@ -653,19 +708,23 @@ export default function ThreeCanvas({
     if (lights.keySpot) {
       lights.keySpot.intensity = isDarkTheme ? 4.5 : 3.9;
     }
+    if (lights.rimLeft) {
+      lights.rimLeft.intensity = isDarkTheme ? 3.0 : 1.6;
+    }
+    if (lights.rimRight) {
+      lights.rimRight.intensity = isDarkTheme ? 2.5 : 1.8;
+    }
+    if (lights.fillLight) {
+      lights.fillLight.intensity = isDarkTheme ? 0.6 : 0.9;
+    }
 
-    // Update shaders ambient term
     if (garments) {
-      garments.forEach(g => {
+      garments.forEach((g) => {
         if (g.shaderMat) {
-          g.shaderMat.uniforms.uAmbientColor.value.set(
-            isDarkTheme ? 0.08 : 0.65,
-            isDarkTheme ? 0.28 : 0.62,
-            isDarkTheme ? 0.18 : 0.58
-          );
+          g.shaderMat.uniforms.uIsDarkTheme.value = isDarkTheme ? 1.0 : 0.0;
         }
         if (g.shadowMesh) {
-          g.shadowMesh.material.opacity = isDarkTheme ? 0.75 : 0.35;
+          g.shadowMesh.material.opacity = isDarkTheme ? 0.85 : 0.45;
         }
       });
     }
@@ -674,8 +733,7 @@ export default function ThreeCanvas({
   return (
     <div
       ref={mountRef}
-      className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
+      className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing overflow-hidden"
     />
   );
 }
-

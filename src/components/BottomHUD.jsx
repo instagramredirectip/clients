@@ -14,14 +14,14 @@ export default function BottomHUD({
 }) {
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-20 pointer-events-none pb-8 pt-12 px-6 md:px-12 flex flex-col items-center justify-end transition-all duration-700 ${
+      className={`fixed bottom-0 left-0 right-0 z-20 pointer-events-none pb-4 pt-4 px-4 md:pb-8 md:pt-12 md:px-12 flex flex-col items-center justify-end transition-all duration-700 ${
         isExploring ? 'opacity-0 translate-y-10 pointer-events-none' : 'opacity-100 translate-y-0'
       }`}
     >
       {/* Floating Center Caption & Action Card */}
       <div className="pointer-events-auto w-full max-w-xl mx-auto flex flex-col items-center">
         <div
-          className={`w-full p-6 md:p-7 rounded-2xl border transition-all duration-500 shadow-2xl ${
+          className={`w-full p-4 sm:p-5 md:p-7 rounded-2xl border transition-all duration-500 shadow-2xl ${
             isDarkTheme
               ? 'glass-panel-dark border-white/15 text-[#F5EBD7] shadow-black/80'
               : 'glass-panel-ivory border-[#046438]/20 text-[#046438] shadow-[#046438]/10'

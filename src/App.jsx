@@ -133,19 +133,32 @@ export default function App() {
 
       {/* 4. Luxury Slide-In Product Detail Card (Explore Mode) */}
       {isExploring && (
-        <ProductDetailCard
-          piece={activePiece}
-          activeColorIndex={activeColorIndex}
-          onSelectColor={handleSelectColor}
-          viewMode={viewMode}
-          setViewMode={(mode) => {
-            setViewMode(mode);
-            playTone(480, 0.08);
-          }}
-          onClose={handleCloseExplore}
-          onAddToBag={handleAddToBag}
-          isDarkTheme={isDarkTheme}
-        />
+        <>
+          {/* Mobile interactive rotation hint pill */}
+          <div className="md:hidden fixed top-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+            <span className={`text-[9px] font-mono tracking-widest uppercase px-3 py-1 rounded-full border backdrop-blur-md shadow-sm ${
+              isDarkTheme 
+                ? 'bg-black/50 border-white/20 text-[#F5EBD7]/90' 
+                : 'bg-[#F5EBD7]/85 border-[#046438]/20 text-[#046438]'
+            }`}>
+              ↺ SWIPE TO ROTATE 360°
+            </span>
+          </div>
+
+          <ProductDetailCard
+            piece={activePiece}
+            activeColorIndex={activeColorIndex}
+            onSelectColor={handleSelectColor}
+            viewMode={viewMode}
+            setViewMode={(mode) => {
+              setViewMode(mode);
+              playTone(480, 0.08);
+            }}
+            onClose={handleCloseExplore}
+            onAddToBag={handleAddToBag}
+            isDarkTheme={isDarkTheme}
+          />
+        </>
       )}
     </div>
   );
