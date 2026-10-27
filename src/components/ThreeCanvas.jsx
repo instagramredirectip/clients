@@ -57,9 +57,9 @@ export default function ThreeCanvas({
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 50);
-    camera.position.set(0, 0.05, 5.2);
-    camera.lookAt(0, -0.05, 0);
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 50);
+    camera.position.set(0, 0.35, 4.3);
+    camera.lookAt(0, 0.30, 0);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({
@@ -283,9 +283,9 @@ export default function ThreeCanvas({
         const individualPhase = Math.sin(currentTime * 0.002 + i) * 0.008;
         item.group.rotation.z = state.pendulumAngle * (1.0 - Math.abs(relPos) * 0.25) + individualPhase;
 
-        // Scale: active piece = 1.0, side pieces slightly scaled down
+        // Scale: active piece = 1.15, side pieces slightly scaled down
         const distFromCenter = Math.abs(relPos);
-        const targetScale = Math.max(0.74, 1.0 - distFromCenter * 0.12);
+        const targetScale = Math.max(0.85, 1.15 - distFromCenter * 0.12);
         item.group.scale.setScalar(targetScale);
 
         // Floor shadow follows garment horizontally
@@ -457,14 +457,15 @@ export default function ThreeCanvas({
 
     if (isExploring) {
       // Pan camera so active piece is framed on the left half of viewport
+      // Smoothly pan camera to frame active piece comfortably centered in the left view area
       gsap.to(camera.position, {
-        x: 0.88,
-        y: -0.15,
-        z: 3.8,
+        x: 0.52,
+        y: 0.32,
+        z: 2.85,
         duration: 1.2,
         ease: 'power3.inOut',
         onUpdate: () => {
-          camera.lookAt(0.88, -0.15, 0);
+          camera.lookAt(0.52, 0.30, 0);
         }
       });
 
@@ -498,12 +499,12 @@ export default function ThreeCanvas({
       // Restore camera to center overview of rail
       gsap.to(camera.position, {
         x: 0,
-        y: 0.05,
-        z: 5.2,
+        y: 0.35,
+        z: 4.3,
         duration: 1.2,
         ease: 'power3.inOut',
         onUpdate: () => {
-          camera.lookAt(0, -0.05, 0);
+          camera.lookAt(0, 0.30, 0);
         }
       });
 

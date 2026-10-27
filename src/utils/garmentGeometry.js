@@ -364,8 +364,9 @@ export function loadRealGarmentModel(modelUrl, targetGarmentBody, onLoaded) {
       const center = new THREE.Vector3();
       bbox.getCenter(center);
 
-      // 2. Normalize scale: target length ~1.08m (fits wooden hanger naturally)
-      const targetLength = 1.08;
+      // 2. Normalize scale: target length ~1.30m to 1.45m (luxurious, bigger presentation)
+      const isCoat = modelUrl.includes('coat') || modelUrl.includes('jacket');
+      const targetLength = isCoat ? 1.42 : 1.30;
       const scale = targetLength / (size.y || 1);
       model.scale.setScalar(scale);
 
@@ -375,7 +376,9 @@ export function loadRealGarmentModel(modelUrl, targetGarmentBody, onLoaded) {
       bbox.getCenter(center);
 
       // 3. Anchor shoulder line directly on wooden hanger at y = -0.24
-      const shoulderY = bbox.min.y + 0.82 * size.y;
+      const isHoodie = modelUrl.includes('hoodie');
+      const shoulderFactor = isHoodie ? 0.83 : 0.88;
+      const shoulderY = bbox.min.y + shoulderFactor * size.y;
       model.position.x = -center.x;
       model.position.y = -0.24 - shoulderY;
       model.position.z = -center.z;
