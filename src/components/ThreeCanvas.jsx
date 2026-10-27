@@ -720,10 +720,14 @@ export default function ThreeCanvas({
 
     if (garments) {
       garments.forEach((g) => {
-        if (g.shaderMat) {
-          g.shaderMat.uniforms.uIsDarkTheme.value = isDarkTheme ? 1.0 : 0.0;
+        if (g.shaderMat?.uniforms?.uAmbientColor) {
+          g.shaderMat.uniforms.uAmbientColor.value.set(
+            isDarkTheme ? 0.02 : 0.15,
+            isDarkTheme ? 0.08 : 0.14,
+            isDarkTheme ? 0.05 : 0.12
+          );
         }
-        if (g.shadowMesh) {
+        if (g.shadowMesh?.material) {
           g.shadowMesh.material.opacity = isDarkTheme ? 0.85 : 0.45;
         }
       });
