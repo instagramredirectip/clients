@@ -24,10 +24,10 @@ export const PIECES = [
     ],
     fitSizing: 'Designed for a tailored, relaxed drape. Model is 6\'1" (185cm) wearing European size 48.',
     colors: [
-      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
-      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
-      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
       { name: 'Washed Coal', hex: '#1c1d22', rgb: [0.110, 0.110, 0.130] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
       { name: 'Crimson Wine', hex: '#58111A', rgb: [0.350, 0.070, 0.100] }
     ],
     defaultColorIndex: 0,
@@ -59,11 +59,11 @@ export const PIECES = [
     ],
     fitSizing: 'True to bespoke atelier sizing. Order your standard chest measurement.',
     colors: [
-      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
-      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
-      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
       { name: 'Midnight Navy', hex: '#141a29', rgb: [0.080, 0.100, 0.160] },
-      { name: 'Washed Coal', hex: '#1f2025', rgb: [0.120, 0.120, 0.140] }
+      { name: 'Washed Coal', hex: '#1f2025', rgb: [0.120, 0.120, 0.140] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] }
     ],
     defaultColorIndex: 0,
     sizes: ['46', '48', '50', '52', '54'],
@@ -94,10 +94,10 @@ export const PIECES = [
     ],
     fitSizing: 'Designed to fit cleanly over tailoring or chunky knitwear. Take standard size.',
     colors: [
-      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
-      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
-      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
       { name: 'Crimson Wine', hex: '#58111A', rgb: [0.350, 0.070, 0.100] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
       { name: 'Washed Coal', hex: '#18191d', rgb: [0.090, 0.100, 0.110] }
     ],
     defaultColorIndex: 0,
@@ -143,70 +143,36 @@ export const PIECES = [
     id: 'piece-05',
     number: '05',
     indexStr: '05 / 05',
-    title: 'Le Blouson Architectural Bomber',
+    title: 'Classic Black Flame Hoodie',
     modelPath: '/models/classic_black_flame_hoodie.glb',
-    tagline: 'Waxed silk twill fused with dense Scottish lambswool.',
-    price: 1950,
-    priceFormatted: '$1,950',
-    fabric: 'Waxed Silk & Lambswool Twill',
-    composition: '55% Mulberry Silk, 45% Lambswool • Merino Ribbed Trims',
-    silhouette: 'Boxy cropped proportions with articulated drop elbow pleats',
-    hardware: 'Two-way heavy gauge Riri zipper in matte ruthenium finish',
+    tagline: 'Heavyweight French terry cotton with authentic flame graphic artwork.',
+    price: 1650,
+    priceFormatted: '$1,650',
+    fabric: '468gsm Heavyweight French Terry Cotton',
+    composition: '100% Combed Cotton Fleece • Ribbed 2x2 Trims • Authentic Flame Prints',
+    silhouette: 'Boxy streetwear drape with drop shoulders and double-layered hood',
+    hardware: 'Gunmetal eyelets with braided cotton drawcords',
     details: [
-      'Weather-resistant dry-waxed silk shell with tactile matte luster',
-      'Heavyweight 2x2 ribbed collar, cuffs, and hem knitted in Scotland',
-      'Articulated sleeve pleats engineered for ergonomics and posture',
-      'Concealed internal chest pocket with RiRi zip pull'
+      'Authentic 3D garment model with original textures and flame detailing',
+      'Heavyweight 468gsm combed French terry fleece body',
+      'Double-layered structured hood with reinforced collar seam',
+      'Kangaroo pouch front pocket with reinforced bar-tack stitching'
     ],
     fabricCare: [
-      'Do not dry clean, do not machine wash',
-      'Sponge clean cold water only; re-wax periodically with natural wax',
-      'Allow to dry naturally away from direct radiators'
+      'Machine wash cold inside-out on gentle cycle',
+      'Do not iron directly over flame graphics',
+      'Lay flat to dry away from direct sunlight'
     ],
-    fitSizing: 'Cropped body with relaxed sleeve volume. True to size.',
+    fitSizing: 'Boxy oversized cut. Order true to size for signature drape.',
     colors: [
+      { name: 'Classic Black', hex: '#111113', rgb: [0.07, 0.07, 0.08] },
+      { name: 'Washed Charcoal', hex: '#25262c', rgb: [0.15, 0.15, 0.17] },
       { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
       { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
-      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
-      { name: 'Washed Coal', hex: '#191a1e', rgb: [0.100, 0.100, 0.120] },
       { name: 'Crimson Wine', hex: '#4e1018', rgb: [0.310, 0.060, 0.090] }
     ],
     defaultColorIndex: 0,
-    sizes: ['46', '48', '50', '52', '54'],
-    garmentType: 'bomber'
-  },
-   {
-    id: 'piece-06',
-    number: '03',
-    title: "Le Manteau D'Hiver Trench Coat",
-    modelPath: '/models/classic_black_flame_hoodie.glb', // <-- Point to your .glb file here!
-    price: 4100,
-    priceFormatted: '$1,950',
-    fabric: 'Waxed Silk & Lambswool Twill',
-    composition: '55% Mulberry Silk, 45% Lambswool • Merino Ribbed Trims',
-    silhouette: 'Boxy cropped proportions with articulated drop elbow pleats',
-    hardware: 'Two-way heavy gauge Riri zipper in matte ruthenium finish',
-    details: [
-      'Weather-resistant dry-waxed silk shell with tactile matte luster',
-      'Heavyweight 2x2 ribbed collar, cuffs, and hem knitted in Scotland',
-      'Articulated sleeve pleats engineered for ergonomics and posture',
-      'Concealed internal chest pocket with RiRi zip pull'
-    ],
-    fabricCare: [
-      'Do not dry clean, do not machine wash',
-      'Sponge clean cold water only; re-wax periodically with natural wax',
-      'Allow to dry naturally away from direct radiators'
-    ],
-    fitSizing: 'Cropped body with relaxed sleeve volume. True to size.',
-    colors: [
-      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
-      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
-      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
-      { name: 'Washed Coal', hex: '#191a1e', rgb: [0.100, 0.100, 0.120] },
-      { name: 'Crimson Wine', hex: '#4e1018', rgb: [0.310, 0.060, 0.090] }
-    ],
-    defaultColorIndex: 0,
-    sizes: ['46', '48', '50', '52', '54'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     garmentType: 'bomber'
   }
 ];

@@ -349,7 +349,7 @@ export function buildGarmentMesh(type, material, woodTexture) {
  * @param {THREE.ShaderMaterial} [shaderMaterial] - Optional GLSL material for color wipe
  * @param {Function} [onLoaded] - Callback when model loads successfully
  */
-export function loadRealGarmentModel(modelUrl, targetGarmentBody, shaderMaterial, onLoaded) {
+export function loadRealGarmentModel(modelUrl, targetGarmentBody, onLoaded) {
   if (!modelUrl) return;
 
   gltfLoader.load(
@@ -364,8 +364,8 @@ export function loadRealGarmentModel(modelUrl, targetGarmentBody, shaderMaterial
       const center = new THREE.Vector3();
       bbox.getCenter(center);
 
-      // 2. Normalize scale: target length ~1.35m
-      const targetLength = 1.35;
+      // 2. Normalize scale: target length ~1.08m (fits wooden hanger naturally)
+      const targetLength = 1.08;
       const scale = targetLength / (size.y || 1);
       model.scale.setScalar(scale);
 
@@ -374,19 +374,26 @@ export function loadRealGarmentModel(modelUrl, targetGarmentBody, shaderMaterial
       bbox.getSize(size);
       bbox.getCenter(center);
 
-      // 3. Anchor top of dress/coat directly under hanger at y = -0.24
+      // 3. Anchor shoulder line directly on wooden hanger at y = -0.24
+      const shoulderY = bbox.min.y + 0.82 * size.y;
       model.position.x = -center.x;
-      model.position.y = -0.24 - bbox.max.y;
+      model.position.y = -0.24 - shoulderY;
       model.position.z = -center.z;
 
-      // 4. Configure shadows and materials
+      // 4. PRESERVE AUTHENTIC MATERIALS & TEXTURES (DO NOT OVERWRITE WITH SHADER!)
       model.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          // Apply custom GLSL color-wipe shader if requested
-          if (shaderMaterial) {
-            child.material = shaderMaterial;
+          if (child.material) {
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach((mat) => {
+              mat.side = THREE.DoubleSide;
+              if (!mat.userData.origColor && mat.color) {
+                mat.userData.origColor = mat.color.clone();
+              }
+              mat.needsUpdate = true;
+            });
           }
         }
       });
@@ -396,12 +403,13 @@ export function loadRealGarmentModel(modelUrl, targetGarmentBody, shaderMaterial
         c.visible = false;
       });
       targetGarmentBody.add(model);
+      targetGarmentBody.userData.importedModel = model;
 
       if (onLoaded) onLoaded(model);
     },
     undefined,
     (err) => {
-      console.info(`[Atelier Valois] Model '${modelUrl}' not found; using procedural tailored mesh.`);
+      console.info(`[Atelier Valois] Model '${modelUrl}' not found; using procedural tailored mesh.`, err);
     }
   );
 }

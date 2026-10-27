@@ -202,7 +202,7 @@ export default function ThreeCanvas({
 
       // If a real 3D model path (.glb) is provided, load and fit it to hanger
       if (piece.modelPath) {
-        loadRealGarmentModel(piece.modelPath, garmentBody, shaderMat);
+        loadRealGarmentModel(piece.modelPath, garmentBody);
       }
 
       // Floor Contact Shadow plane
@@ -471,10 +471,21 @@ export default function ThreeCanvas({
       // Fade out background items into the studio fog
       garments.forEach((g) => {
         if (g.index !== activePieceIndex) {
-          gsap.to(g.shaderMat.uniforms.uOpacity, {
-            value: 0.0,
-            duration: 0.8,
-            ease: 'power2.out'
+          if (g.shaderMat) {
+            gsap.to(g.shaderMat.uniforms.uOpacity, {
+              value: 0.0,
+              duration: 0.8,
+              ease: 'power2.out'
+            });
+          }
+          g.group.traverse((child) => {
+            if (child.isMesh && child.material && child.material !== g.shaderMat) {
+              const mats = Array.isArray(child.material) ? child.material : [child.material];
+              mats.forEach((m) => {
+                m.transparent = true;
+                gsap.to(m, { opacity: 0.0, duration: 0.8, ease: 'power2.out' });
+              });
+            }
           });
           gsap.to(g.shadowMesh.material, {
             opacity: 0.0,
@@ -498,10 +509,20 @@ export default function ThreeCanvas({
 
       // Fade all garments back in
       garments.forEach((g) => {
-        gsap.to(g.shaderMat.uniforms.uOpacity, {
-          value: 1.0,
-          duration: 0.9,
-          ease: 'power2.out'
+        if (g.shaderMat) {
+          gsap.to(g.shaderMat.uniforms.uOpacity, {
+            value: 1.0,
+            duration: 0.9,
+            ease: 'power2.out'
+          });
+        }
+        g.group.traverse((child) => {
+          if (child.isMesh && child.material && child.material !== g.shaderMat) {
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach((m) => {
+              gsap.to(m, { opacity: 1.0, duration: 0.9, ease: 'power2.out' });
+            });
+          }
         });
         gsap.to(g.shadowMesh.material, {
           opacity: isDarkTheme ? 0.85 : 0.45,
@@ -539,6 +560,31 @@ export default function ThreeCanvas({
         ease: 'power2.inOut',
         onComplete: () => {
           shaderMat.uniforms.uColorPrev.value.set(...newColor.rgb);
+        }
+      });
+    }
+
+    // If active garment has an imported 3D model, handle color tinting smoothly
+    const importedModel = activeGarment.garmentBody?.userData?.importedModel;
+    if (importedModel) {
+      importedModel.traverse((child) => {
+        if (child.isMesh && child.material) {
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.forEach((m) => {
+            if (m.color) {
+              const targetColor = activeColorIndex === 0
+                ? (m.userData.origColor || new THREE.Color(1, 1, 1))
+                : new THREE.Color(...newColor.rgb);
+
+              gsap.to(m.color, {
+                r: targetColor.r,
+                g: targetColor.g,
+                b: targetColor.b,
+                duration: 1.0,
+                ease: 'power2.inOut'
+              });
+            }
+          });
         }
       });
     }
