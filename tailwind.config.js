@@ -8,6 +8,19 @@ export default {
   theme: {
     extend: {
       colors: {
+        ivory: {
+          DEFAULT: '#F5EBD7',
+          light: '#FAF4E8',
+          dark: '#EADBBE',
+          border: 'rgba(4, 100, 56, 0.16)',
+        },
+        emerald: {
+          DEFAULT: '#046438',
+          dark: '#034a29',
+          light: '#087a46',
+          muted: '#436852',
+          border: 'rgba(4, 100, 56, 0.22)',
+        },
         atelier: {
           dark: '#0c0c0e',
           surface: '#151518',
@@ -16,14 +29,6 @@ export default {
           muted: '#8e8e93',
           gold: '#c5a880',
           chrome: '#e5e5ea',
-        },
-        nord: {
-          bg: '#f6f5f0',
-          surface: '#ecebe4',
-          card: '#ffffff',
-          border: 'rgba(0, 0, 0, 0.08)',
-          text: '#191919',
-          muted: '#737373',
         }
       },
       fontFamily: {
@@ -35,4 +40,3 @@ export default {
   },
   plugins: [],
 }
-

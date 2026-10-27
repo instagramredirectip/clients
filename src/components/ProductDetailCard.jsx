@@ -33,21 +33,25 @@ export default function ProductDetailCard({
     <aside
       className={`fixed top-0 right-0 bottom-0 z-30 w-full max-w-lg md:max-w-md p-6 md:p-8 flex flex-col justify-between overflow-y-auto shadow-2xl transition-all duration-700 ${
         isDarkTheme
-          ? 'glass-panel-dark border-l border-white/10 text-white shadow-black/80'
-          : 'glass-panel-light border-l border-black/10 text-neutral-900 shadow-neutral-500/20'
+          ? 'glass-panel-dark border-l border-white/15 text-[#F5EBD7] shadow-black/90'
+          : 'glass-panel-ivory border-l border-[#046438]/20 text-[#046438] shadow-[#046438]/15'
       }`}
     >
       <div className="space-y-6">
         {/* Top Header: Badge, Index & Close Button */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        <div className={`flex items-center justify-between pb-4 border-b ${
+          isDarkTheme ? 'border-white/10' : 'border-[#046438]/15'
+        }`}>
           <div className="flex items-center space-x-3">
             <span className={`font-mono text-[10px] tracking-[0.25em] uppercase px-2.5 py-1 rounded border ${
-              isDarkTheme ? 'border-amber-400/30 text-amber-300' : 'border-amber-800/30 text-amber-800'
+              isDarkTheme 
+                ? 'border-emerald-400/30 text-emerald-300 bg-emerald-950/40' 
+                : 'border-[#046438]/30 text-[#046438] bg-[#046438]/8 font-medium'
             }`}>
               PIECE {piece.indexStr}
             </span>
             <span className={`font-mono text-[10px] tracking-widest uppercase ${
-              isDarkTheme ? 'text-neutral-400' : 'text-neutral-500'
+              isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'
             }`}>
               WINTER CAPSULE
             </span>
@@ -58,8 +62,8 @@ export default function ProductDetailCard({
             aria-label="Close product view"
             className={`p-2 rounded-full border transition-all duration-300 ${
               isDarkTheme
-                ? 'border-white/15 text-neutral-400 hover:text-white hover:border-white/40'
-                : 'border-black/15 text-neutral-600 hover:text-black hover:border-black/40'
+                ? 'border-white/20 text-[#F5EBD7]/70 hover:text-white hover:border-white/40'
+                : 'border-[#046438]/20 text-[#046438]/70 hover:text-[#046438] hover:border-[#046438]/50'
             }`}
           >
             <X size={16} />
@@ -68,21 +72,21 @@ export default function ProductDetailCard({
 
         {/* Title, Price & Tagline */}
         <div className="space-y-2">
-          <h1 className="font-serif text-2xl md:text-3xl font-normal tracking-tight">
+          <h1 className="font-serif text-2xl md:text-3xl font-medium tracking-tight">
             {piece.title}
           </h1>
           <div className="flex items-baseline space-x-3">
-            <span className="font-serif text-xl md:text-2xl font-medium">
+            <span className="font-serif text-xl md:text-2xl font-semibold">
               {piece.priceFormatted}
             </span>
             <span className={`font-mono text-[11px] tracking-wider uppercase ${
-              isDarkTheme ? 'text-neutral-400' : 'text-neutral-500'
+              isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'
             }`}>
               VAT INCL.
             </span>
           </div>
           <p className={`text-xs leading-relaxed font-light ${
-            isDarkTheme ? 'text-neutral-300' : 'text-neutral-600'
+            isDarkTheme ? 'text-[#F5EBD7]/75' : 'text-[#046438]/80'
           }`}>
             {piece.tagline}
           </p>
@@ -91,26 +95,26 @@ export default function ProductDetailCard({
         {/* View Mode Toggle: ON HANGER vs ON MODEL */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-wider uppercase">
-            <span className={isDarkTheme ? 'text-neutral-400' : 'text-neutral-500'}>
+            <span className={isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'}>
               PERSPECTIVE
             </span>
-            <span className="text-amber-500 font-medium">
+            <span className="font-medium text-[#046438] dark:text-[#F5EBD7]">
               {viewMode === 'hanger' ? 'ARCHITECTURAL DRAPE' : 'STYLED SILHOUETTE'}
             </span>
           </div>
           <div className={`grid grid-cols-2 p-1 rounded-xl border ${
-            isDarkTheme ? 'bg-black/30 border-white/10' : 'bg-black/5 border-black/10'
+            isDarkTheme ? 'bg-black/40 border-white/10' : 'bg-[#046438]/6 border-[#046438]/15'
           }`}>
             <button
               onClick={() => setViewMode('hanger')}
               className={`py-2 rounded-lg font-mono text-[10px] tracking-widest uppercase transition-all duration-300 ${
                 viewMode === 'hanger'
                   ? isDarkTheme
-                    ? 'bg-white/15 text-white shadow'
-                    : 'bg-white text-black shadow'
+                    ? 'bg-white/20 text-[#F5EBD7] shadow'
+                    : 'bg-[#046438] text-[#F5EBD7] shadow'
                   : isDarkTheme
-                  ? 'text-neutral-400 hover:text-white'
-                  : 'text-neutral-600 hover:text-black'
+                  ? 'text-[#F5EBD7]/60 hover:text-white'
+                  : 'text-[#046438]/70 hover:text-[#046438]'
               }`}
             >
               ON HANGER
@@ -120,11 +124,11 @@ export default function ProductDetailCard({
               className={`py-2 rounded-lg font-mono text-[10px] tracking-widest uppercase transition-all duration-300 ${
                 viewMode === 'model'
                   ? isDarkTheme
-                    ? 'bg-white/15 text-white shadow'
-                    : 'bg-white text-black shadow'
+                    ? 'bg-white/20 text-[#F5EBD7] shadow'
+                    : 'bg-[#046438] text-[#F5EBD7] shadow'
                   : isDarkTheme
-                  ? 'text-neutral-400 hover:text-white'
-                  : 'text-neutral-600 hover:text-black'
+                  ? 'text-[#F5EBD7]/60 hover:text-white'
+                  : 'text-[#046438]/70 hover:text-[#046438]'
               }`}
             >
               ON MODEL
@@ -135,11 +139,11 @@ export default function ProductDetailCard({
         {/* Colorway Swatches with GLSL Wipe Trigger */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-wider uppercase">
-            <span className={isDarkTheme ? 'text-neutral-400' : 'text-neutral-500'}>
-              COLORWAY: <strong className={isDarkTheme ? 'text-white' : 'text-black'}>{activeColor.name}</strong>
+            <span className={isDarkTheme ? 'text-[#F5EBD7]/70' : 'text-[#046438]/80'}>
+              COLORWAY: <strong className={isDarkTheme ? 'text-white' : 'text-[#046438]'}>{activeColor.name}</strong>
             </span>
             <span className={`text-[10px] flex items-center space-x-1 ${
-              isDarkTheme ? 'text-amber-400' : 'text-amber-700'
+              isDarkTheme ? 'text-emerald-300' : 'text-[#046438]'
             }`}>
               <Sparkles size={11} />
               <span>LIVE GLSL DYE</span>
@@ -156,14 +160,14 @@ export default function ProductDetailCard({
                   className={`group relative p-1 rounded-full border transition-all duration-300 ${
                     isSelected
                       ? isDarkTheme
-                        ? 'border-white scale-110'
-                        : 'border-black scale-110'
+                        ? 'border-white scale-110 shadow-lg'
+                        : 'border-[#046438] scale-110 shadow-lg shadow-[#046438]/25'
                       : 'border-transparent hover:scale-105'
                   }`}
                   title={`Select ${color.name} (GLSL color wipe)`}
                 >
                   <span
-                    className="block w-6 h-6 rounded-full shadow-inner border border-white/20"
+                    className="block w-6 h-6 rounded-full shadow-inner border border-black/15"
                     style={{ backgroundColor: color.hex }}
                   />
                   {isSelected && (
@@ -180,11 +184,11 @@ export default function ProductDetailCard({
         {/* Size Selector */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-wider uppercase">
-            <span className={isDarkTheme ? 'text-neutral-400' : 'text-neutral-500'}>
+            <span className={isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'}>
               SIZE (EU / CHEST)
             </span>
             <span className={`text-[10px] underline cursor-pointer ${
-              isDarkTheme ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black'
+              isDarkTheme ? 'text-[#F5EBD7]/70 hover:text-white' : 'text-[#046438]/75 hover:text-[#046438]'
             }`}>
               SIZE GUIDE
             </span>
@@ -200,11 +204,11 @@ export default function ProductDetailCard({
                   className={`py-2 rounded-lg font-mono text-xs tracking-wider transition-all duration-300 border ${
                     isSelected
                       ? isDarkTheme
-                        ? 'bg-white text-black border-white font-medium shadow'
-                        : 'bg-black text-white border-black font-medium shadow'
+                        ? 'bg-[#F5EBD7] text-[#046438] border-[#F5EBD7] font-semibold shadow'
+                        : 'bg-[#046438] text-[#F5EBD7] border-[#046438] font-semibold shadow'
                       : isDarkTheme
-                      ? 'border-white/10 text-neutral-300 hover:border-white/30'
-                      : 'border-black/10 text-neutral-700 hover:border-black/30'
+                      ? 'border-white/15 text-[#F5EBD7]/70 hover:border-white/35'
+                      : 'border-[#046438]/20 text-[#046438]/80 hover:border-[#046438]/40'
                   }`}
                 >
                   {size}
@@ -219,12 +223,12 @@ export default function ProductDetailCard({
           <button
             onClick={handleAdd}
             disabled={addedAnimation}
-            className={`w-full py-4 rounded-xl font-mono text-xs tracking-[0.2em] uppercase font-medium shadow-xl flex items-center justify-center space-x-2 transition-all duration-300 ${
+            className={`w-full py-4 rounded-xl font-mono text-xs tracking-[0.2em] uppercase font-semibold shadow-xl flex items-center justify-center space-x-2 transition-all duration-300 ${
               addedAnimation
-                ? 'bg-emerald-600 text-white'
+                ? 'bg-emerald-700 text-white'
                 : isDarkTheme
-                ? 'btn-luxury-dark'
-                : 'btn-luxury-light'
+                ? 'bg-[#F5EBD7] text-[#046438] hover:bg-white'
+                : 'bg-[#046438] text-[#F5EBD7] hover:bg-[#034a29] shadow-[#046438]/20'
             }`}
           >
             {addedAnimation ? (
@@ -239,7 +243,9 @@ export default function ProductDetailCard({
         </div>
 
         {/* Expandable Accordions */}
-        <div className="divide-y divide-white/10 pt-2 text-xs">
+        <div className={`divide-y pt-2 text-xs ${
+          isDarkTheme ? 'divide-white/10' : 'divide-[#046438]/15'
+        }`}>
           {/* Details */}
           <div className="py-3">
             <button
@@ -256,7 +262,7 @@ export default function ProductDetailCard({
             </button>
             {expandedAccordion === 'details' && (
               <ul className={`mt-2 space-y-1.5 font-light pl-3 border-l-2 ${
-                isDarkTheme ? 'border-amber-400/40 text-neutral-300' : 'border-amber-800/40 text-neutral-700'
+                isDarkTheme ? 'border-emerald-400/40 text-[#F5EBD7]/80' : 'border-[#046438]/40 text-[#046438]/85'
               }`}>
                 {piece.details.map((detail, idx) => (
                   <li key={idx} className="leading-relaxed">
@@ -283,12 +289,14 @@ export default function ProductDetailCard({
             </button>
             {expandedAccordion === 'fabric' && (
               <div className={`mt-2 space-y-2 font-light ${
-                isDarkTheme ? 'text-neutral-300' : 'text-neutral-700'
+                isDarkTheme ? 'text-[#F5EBD7]/80' : 'text-[#046438]/85'
               }`}>
-                <p className="font-mono text-[10px] text-amber-500 uppercase tracking-widest">
+                <p className={`font-mono text-[10px] uppercase tracking-widest font-medium ${
+                  isDarkTheme ? 'text-emerald-300' : 'text-[#046438]'
+                }`}>
                   {piece.composition}
                 </p>
-                <ul className="space-y-1 pl-3 border-l-2 border-white/20">
+                <ul className="space-y-1 pl-3 border-l-2 border-[#046438]/20">
                   {piece.fabricCare.map((care, idx) => (
                     <li key={idx} className="leading-relaxed">
                       • {care}
@@ -315,7 +323,7 @@ export default function ProductDetailCard({
             </button>
             {expandedAccordion === 'fit' && (
               <p className={`mt-2 leading-relaxed font-light ${
-                isDarkTheme ? 'text-neutral-300' : 'text-neutral-700'
+                isDarkTheme ? 'text-[#F5EBD7]/80' : 'text-[#046438]/85'
               }`}>
                 {piece.fitSizing}
               </p>
@@ -338,18 +346,18 @@ export default function ProductDetailCard({
             </button>
             {expandedAccordion === 'shipping' && (
               <div className={`mt-2 space-y-2 font-light ${
-                isDarkTheme ? 'text-neutral-300' : 'text-neutral-700'
+                isDarkTheme ? 'text-[#F5EBD7]/80' : 'text-[#046438]/85'
               }`}>
                 <div className="flex items-center space-x-2 text-[11px]">
-                  <Truck size={14} className="text-amber-500" />
+                  <Truck size={14} className="text-[#046438] dark:text-emerald-300" />
                   <span>Complimentary armored global courier delivery (2-3 days).</span>
                 </div>
                 <div className="flex items-center space-x-2 text-[11px]">
-                  <RefreshCw size={14} className="text-amber-500" />
+                  <RefreshCw size={14} className="text-[#046438] dark:text-emerald-300" />
                   <span>30-day white-glove atelier fitting exchanges.</span>
                 </div>
                 <div className="flex items-center space-x-2 text-[11px]">
-                  <ShieldCheck size={14} className="text-amber-500" />
+                  <ShieldCheck size={14} className="text-[#046438] dark:text-emerald-300" />
                   <span>Lifetime seam & button restoration warranty included.</span>
                 </div>
               </div>
@@ -359,12 +367,11 @@ export default function ProductDetailCard({
       </div>
 
       {/* Footer Atelier Note */}
-      <div className={`pt-6 border-t border-white/10 text-center font-mono text-[9px] tracking-[0.25em] uppercase ${
-        isDarkTheme ? 'text-neutral-500' : 'text-neutral-400'
+      <div className={`pt-6 border-t font-mono text-[9px] tracking-[0.25em] uppercase text-center ${
+        isDarkTheme ? 'border-white/10 text-[#F5EBD7]/50' : 'border-[#046438]/15 text-[#046438]/60 font-medium'
       }`}>
         HANDCRAFTED IN PARIS & MILAN • EDITION OF 40 PIECES
       </div>
     </aside>
   );
 }
-

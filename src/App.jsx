@@ -11,7 +11,7 @@ export default function App() {
   const [isExploring, setIsExploring] = useState(false);
   const [activeColorIndex, setActiveColorIndex] = useState(0);
   const [viewMode, setViewMode] = useState('hanger'); // 'hanger' | 'model'
-  const [isDarkTheme, setIsDarkTheme] = useState(true);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [bagCount, setBagCount] = useState(0);
 
@@ -90,7 +90,7 @@ export default function App() {
   return (
     <div
       className={`relative w-screen h-screen overflow-hidden select-none transition-colors duration-700 ${
-        isDarkTheme ? 'bg-[#0c0c0e] text-white' : 'bg-[#f6f5f0] text-neutral-900'
+        isDarkTheme ? 'bg-[#072214] text-[#F5EBD7]' : 'bg-[#F5EBD7] text-[#046438]'
       }`}
     >
       {/* 1. Full-screen Interactive 3D WebGL Scene */}

@@ -14,15 +14,15 @@ export default function Navbar({
       {/* Brand & Edition */}
       <div className="pointer-events-auto flex items-center space-x-4">
         <div className="flex flex-col">
-          <span className={`font-serif tracking-[0.25em] text-lg md:text-xl font-medium transition-colors duration-500 ${
-            isDarkTheme ? 'text-white' : 'text-neutral-900'
+          <span className={`font-serif tracking-[0.25em] text-lg md:text-xl font-semibold transition-colors duration-500 ${
+            isDarkTheme ? 'text-[#F5EBD7]' : 'text-[#046438]'
           }`}>
-            {isDarkTheme ? 'ATELIER VALOIS' : 'NORDRAIL'}
+            ATELIER VALOIS
           </span>
           <span className={`font-mono text-[9px] tracking-[0.3em] uppercase transition-colors duration-500 ${
-            isDarkTheme ? 'text-atelier-muted' : 'text-nord-muted'
+            isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'
           }`}>
-            {isDarkTheme ? 'PARIS • EDITION 04' : 'STOCKHOLM • STUDIO'}
+            WARM IVORY & EMERALD • CAPSULE
           </span>
         </div>
       </div>
@@ -31,10 +31,10 @@ export default function Navbar({
       <div className="hidden md:flex items-center space-x-3 pointer-events-none">
         <div className={`px-4 py-1.5 rounded-full text-[11px] font-mono tracking-[0.25em] uppercase border transition-all duration-500 ${
           isDarkTheme 
-            ? 'glass-panel-dark text-neutral-300 border-white/10' 
-            : 'glass-panel-light text-neutral-700 border-black/10'
+            ? 'glass-panel-dark text-[#F5EBD7] border-white/15' 
+            : 'glass-panel-ivory text-[#046438] border-[#046438]/20'
         }`}>
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 mr-2 animate-pulse" />
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#046438] dark:bg-[#F5EBD7] mr-2 animate-pulse" />
           3D GALLERY VIEW / PIECE {activePiece.indexStr}
         </div>
       </div>
@@ -47,8 +47,8 @@ export default function Navbar({
           aria-label="Toggle ambient sound"
           className={`p-2.5 rounded-full border transition-all duration-300 ${
             isDarkTheme
-              ? 'glass-panel-dark border-white/10 text-neutral-300 hover:text-white hover:border-white/25'
-              : 'glass-panel-light border-black/10 text-neutral-700 hover:text-black hover:border-black/25'
+              ? 'glass-panel-dark border-white/15 text-[#F5EBD7] hover:border-white/35'
+              : 'glass-panel-ivory border-[#046438]/20 text-[#046438] hover:border-[#046438]/45'
           }`}
           title={soundEnabled ? 'Mute atelier soundscape' : 'Play atelier soundscape'}
         >
@@ -61,20 +61,20 @@ export default function Navbar({
           aria-label="Toggle light / dark theme"
           className={`p-2.5 rounded-full border transition-all duration-300 ${
             isDarkTheme
-              ? 'glass-panel-dark border-white/10 text-neutral-300 hover:text-white hover:border-white/25'
-              : 'glass-panel-light border-black/10 text-neutral-700 hover:text-black hover:border-black/25'
+              ? 'glass-panel-dark border-white/15 text-[#F5EBD7] hover:border-white/35'
+              : 'glass-panel-ivory border-[#046438]/20 text-[#046438] hover:border-[#046438]/45'
           }`}
-          title={isDarkTheme ? 'Switch to Nordrail Daylight (#F6F5F0)' : 'Switch to Atelier Valois Dark'}
+          title={isDarkTheme ? 'Switch to Warm Ivory Studio (#F5EBD7)' : 'Switch to Deep Emerald Night'}
         >
           {isDarkTheme ? <Sun size={15} /> : <Moon size={15} />}
         </button>
 
         {/* Shopping Bag Pill */}
         <button
-          className={`flex items-center space-x-2 px-4 py-2 rounded-full border text-[11px] font-mono tracking-widest uppercase transition-all duration-300 ${
+          className={`flex items-center space-x-2 px-4 py-2 rounded-full border text-[11px] font-mono tracking-widest uppercase transition-all duration-300 shadow-md ${
             isDarkTheme
-              ? 'glass-panel-dark border-white/10 text-white hover:border-white/30'
-              : 'glass-panel-light border-black/10 text-black hover:border-black/30'
+              ? 'bg-[#F5EBD7] text-[#046438] border-[#F5EBD7] hover:bg-white'
+              : 'bg-[#046438] text-[#F5EBD7] border-[#034a29] hover:bg-[#034a29]'
           }`}
         >
           <ShoppingBag size={14} />
@@ -84,4 +84,3 @@ export default function Navbar({
     </header>
   );
 }
-

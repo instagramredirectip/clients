@@ -57,3 +57,4 @@ The system will automatically:
 - **Sketchfab (sketchfab.com):** Search for `"coat"`, `"trench coat"`, `"blazer"`, or `"dress"`. Filter by **Downloadable** and **Free / CC**. Download as `glTF` / `glb`.
 - **CLO 3D / Marvelous Designer:** If you create fashion garments in CLO 3D or Marvelous Designer, export via `File > Export > glTF (GLB)`.
 - **Blender:** Export your garment via `File > Export > glTF 2.0 (.glb)`.
+

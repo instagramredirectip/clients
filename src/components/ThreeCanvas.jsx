@@ -50,7 +50,7 @@ export default function ThreeCanvas({
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    const bgColor = isDarkTheme ? 0x0c0c0e : 0xf6f5f0;
+    const bgColor = isDarkTheme ? 0x072214 : 0xF5EBD7;
     scene.background = new THREE.Color(bgColor);
     scene.fog = new THREE.FogExp2(bgColor, 0.08);
 
@@ -69,7 +69,7 @@ export default function ThreeCanvas({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = isDarkTheme ? 1.05 : 0.95;
+    renderer.toneMappingExposure = isDarkTheme ? 1.05 : 0.98;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -77,15 +77,15 @@ export default function ThreeCanvas({
     rendererRef.current = renderer;
 
     // --- 2. STUDIO LIGHTING ---
-    // Ambient light
+    // Ambient light tuned to Warm Ivory / Emerald
     const ambientLight = new THREE.AmbientLight(
-      isDarkTheme ? 0x22222a : 0x75726e,
-      isDarkTheme ? 1.2 : 1.8
+      isDarkTheme ? 0x042416 : 0xEFE5D0,
+      isDarkTheme ? 1.3 : 1.9
     );
     scene.add(ambientLight);
 
     // Overhead Key Spotlight
-    const keySpot = new THREE.SpotLight(0xfff8ee, isDarkTheme ? 4.5 : 3.8);
+    const keySpot = new THREE.SpotLight(0xfff8ee, isDarkTheme ? 4.5 : 3.9);
     keySpot.position.set(0, 5.2, 3.5);
     keySpot.angle = 0.65;
     keySpot.penumbra = 0.8;
@@ -97,15 +97,15 @@ export default function ThreeCanvas({
     keySpot.shadow.bias = -0.0001;
     scene.add(keySpot);
 
-    // Left Rim / Specular Spotlight
-    const rimLeft = new THREE.SpotLight(0xaad0ff, isDarkTheme ? 3.0 : 1.8);
+    // Left Rim / Specular Spotlight (Emerald green edge tint)
+    const rimLeft = new THREE.SpotLight(0x087A46, isDarkTheme ? 3.0 : 1.6);
     rimLeft.position.set(-4.5, 3.2, -1.8);
     rimLeft.angle = 0.75;
     rimLeft.penumbra = 0.9;
     scene.add(rimLeft);
 
-    // Right Rim Spotlight
-    const rimRight = new THREE.SpotLight(0xffe2b8, isDarkTheme ? 2.5 : 1.5);
+    // Right Rim Spotlight (Warm ivory specular)
+    const rimRight = new THREE.SpotLight(0xFFECD0, isDarkTheme ? 2.5 : 1.8);
     rimRight.position.set(4.5, 3.2, -1.8);
     rimRight.angle = 0.75;
     rimRight.penumbra = 0.9;
@@ -592,19 +592,19 @@ export default function ThreeCanvas({
     const garments = garmentsRef.current;
     if (!scene || !renderer || !lights) return;
 
-    const targetBg = isDarkTheme ? 0x0c0c0e : 0xf6f5f0;
+    const targetBg = isDarkTheme ? 0x072214 : 0xF5EBD7;
     scene.background.set(targetBg);
     scene.fog.color.set(targetBg);
 
-    renderer.toneMappingExposure = isDarkTheme ? 1.05 : 0.95;
+    renderer.toneMappingExposure = isDarkTheme ? 1.05 : 0.98;
 
     // Transition lights
     if (lights.ambientLight) {
-      lights.ambientLight.color.set(isDarkTheme ? 0x22222a : 0x75726e);
-      lights.ambientLight.intensity = isDarkTheme ? 1.2 : 1.8;
+      lights.ambientLight.color.set(isDarkTheme ? 0x042416 : 0xEFE5D0);
+      lights.ambientLight.intensity = isDarkTheme ? 1.3 : 1.9;
     }
     if (lights.keySpot) {
-      lights.keySpot.intensity = isDarkTheme ? 4.5 : 3.8;
+      lights.keySpot.intensity = isDarkTheme ? 4.5 : 3.9;
     }
 
     // Update shaders ambient term
@@ -612,13 +612,13 @@ export default function ThreeCanvas({
       garments.forEach(g => {
         if (g.shaderMat) {
           g.shaderMat.uniforms.uAmbientColor.value.set(
-            isDarkTheme ? 0.18 : 0.55,
-            isDarkTheme ? 0.18 : 0.54,
-            isDarkTheme ? 0.22 : 0.52
+            isDarkTheme ? 0.08 : 0.65,
+            isDarkTheme ? 0.28 : 0.62,
+            isDarkTheme ? 0.18 : 0.58
           );
         }
         if (g.shadowMesh) {
-          g.shadowMesh.material.opacity = isDarkTheme ? 0.85 : 0.45;
+          g.shadowMesh.material.opacity = isDarkTheme ? 0.75 : 0.35;
         }
       });
     }

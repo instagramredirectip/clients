@@ -24,10 +24,11 @@ export const PIECES = [
     ],
     fitSizing: 'Designed for a tailored, relaxed drape. Model is 6\'1" (185cm) wearing European size 48.',
     colors: [
-      { name: 'Washed Coal', hex: '#1c1d22', rgb: [0.11, 0.11, 0.13] },
-      { name: 'Crimson Wine', hex: '#58111A', rgb: [0.35, 0.07, 0.10] },
-      { name: 'Warm Oat', hex: '#d2c4b2', rgb: [0.82, 0.77, 0.70] },
-      { name: 'Forest Pine', hex: '#1c2820', rgb: [0.11, 0.16, 0.12] },
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
+      { name: 'Washed Coal', hex: '#1c1d22', rgb: [0.110, 0.110, 0.130] },
+      { name: 'Crimson Wine', hex: '#58111A', rgb: [0.350, 0.070, 0.100] }
     ],
     defaultColorIndex: 0,
     sizes: ['46', '48', '50', '52', '54'],
@@ -58,10 +59,11 @@ export const PIECES = [
     ],
     fitSizing: 'True to bespoke atelier sizing. Order your standard chest measurement.',
     colors: [
-      { name: 'Midnight Navy', hex: '#141a29', rgb: [0.08, 0.10, 0.16] },
-      { name: 'Washed Coal', hex: '#1f2025', rgb: [0.12, 0.12, 0.14] },
-      { name: 'Oatmeal Twill', hex: '#c5b8a5', rgb: [0.77, 0.72, 0.65] },
-      { name: 'Crimson Wine', hex: '#4f1018', rgb: [0.31, 0.06, 0.09] },
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
+      { name: 'Midnight Navy', hex: '#141a29', rgb: [0.080, 0.100, 0.160] },
+      { name: 'Washed Coal', hex: '#1f2025', rgb: [0.120, 0.120, 0.140] }
     ],
     defaultColorIndex: 0,
     sizes: ['46', '48', '50', '52', '54'],
@@ -92,11 +94,11 @@ export const PIECES = [
     ],
     fitSizing: 'Designed to fit cleanly over tailoring or chunky knitwear. Take standard size.',
     colors: [
-      { name: 'Crimson Wine', hex: '#58111A', rgb: [0.35, 0.07, 0.10] },
-      { name: 'Washed Coal', hex: '#18191d', rgb: [0.09, 0.10, 0.11] },
-      { name: 'Warm Oat', hex: '#dacbbd', rgb: [0.85, 0.79, 0.74] },
-      { name: 'Forest Pine', hex: '#1a261e', rgb: [0.10, 0.15, 0.12] },
-      { name: 'Midnight Navy', hex: '#121824', rgb: [0.07, 0.09, 0.14] }
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
+      { name: 'Crimson Wine', hex: '#58111A', rgb: [0.350, 0.070, 0.100] },
+      { name: 'Washed Coal', hex: '#18191d', rgb: [0.090, 0.100, 0.110] }
     ],
     defaultColorIndex: 0,
     sizes: ['46', '48', '50', '52', '54'],
@@ -127,10 +129,11 @@ export const PIECES = [
     ],
     fitSizing: 'Comfortable oversized cut. For a closer fit, size down one increment.',
     colors: [
-      { name: 'Warm Oat', hex: '#cfc1b0', rgb: [0.81, 0.76, 0.69] },
-      { name: 'Washed Coal', hex: '#1b1c20', rgb: [0.11, 0.11, 0.13] },
-      { name: 'Forest Pine', hex: '#17241b', rgb: [0.09, 0.14, 0.11] },
-      { name: 'Crimson Wine', hex: '#52121b', rgb: [0.32, 0.07, 0.11] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
+      { name: 'Washed Coal', hex: '#1b1c20', rgb: [0.110, 0.110, 0.130] },
+      { name: 'Crimson Wine', hex: '#52121b', rgb: [0.320, 0.070, 0.110] }
     ],
     defaultColorIndex: 0,
     sizes: ['46', '48', '50', '52', '54'],
@@ -161,14 +164,48 @@ export const PIECES = [
     ],
     fitSizing: 'Cropped body with relaxed sleeve volume. True to size.',
     colors: [
-      { name: 'Forest Pine', hex: '#18241d', rgb: [0.09, 0.14, 0.11] },
-      { name: 'Washed Coal', hex: '#191a1e', rgb: [0.10, 0.10, 0.12] },
-      { name: 'Crimson Wine', hex: '#4e1018', rgb: [0.31, 0.06, 0.09] },
-      { name: 'Warm Oat', hex: '#c8bba9', rgb: [0.78, 0.73, 0.66] },
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
+      { name: 'Washed Coal', hex: '#191a1e', rgb: [0.100, 0.100, 0.120] },
+      { name: 'Crimson Wine', hex: '#4e1018', rgb: [0.310, 0.060, 0.090] }
+    ],
+    defaultColorIndex: 0,
+    sizes: ['46', '48', '50', '52', '54'],
+    garmentType: 'bomber'
+  },
+   {
+    id: 'piece-06',
+    number: '03',
+    title: "Le Manteau D'Hiver Trench Coat",
+    modelPath: '/models/classic_black_flame_hoodie.glb', // <-- Point to your .glb file here!
+    price: 4100,
+    priceFormatted: '$1,950',
+    fabric: 'Waxed Silk & Lambswool Twill',
+    composition: '55% Mulberry Silk, 45% Lambswool • Merino Ribbed Trims',
+    silhouette: 'Boxy cropped proportions with articulated drop elbow pleats',
+    hardware: 'Two-way heavy gauge Riri zipper in matte ruthenium finish',
+    details: [
+      'Weather-resistant dry-waxed silk shell with tactile matte luster',
+      'Heavyweight 2x2 ribbed collar, cuffs, and hem knitted in Scotland',
+      'Articulated sleeve pleats engineered for ergonomics and posture',
+      'Concealed internal chest pocket with RiRi zip pull'
+    ],
+    fabricCare: [
+      'Do not dry clean, do not machine wash',
+      'Sponge clean cold water only; re-wax periodically with natural wax',
+      'Allow to dry naturally away from direct radiators'
+    ],
+    fitSizing: 'Cropped body with relaxed sleeve volume. True to size.',
+    colors: [
+      { name: 'Emerald Green', hex: '#046438', rgb: [0.016, 0.392, 0.220] },
+      { name: 'Warm Ivory', hex: '#F5EBD7', rgb: [0.961, 0.922, 0.843] },
+      { name: 'Deep Forest', hex: '#03331d', rgb: [0.012, 0.200, 0.114] },
+      { name: 'Washed Coal', hex: '#191a1e', rgb: [0.100, 0.100, 0.120] },
+      { name: 'Crimson Wine', hex: '#4e1018', rgb: [0.310, 0.060, 0.090] }
     ],
     defaultColorIndex: 0,
     sizes: ['46', '48', '50', '52', '54'],
     garmentType: 'bomber'
   }
 ];
-

@@ -4,13 +4,21 @@
 
 @layer base {
   body {
-    @apply m-0 p-0 overflow-hidden font-sans antialiased;
+    @apply m-0 p-0 overflow-hidden font-sans antialiased bg-[#F5EBD7] text-[#046438];
     user-select: none;
     -webkit-user-select: none;
   }
 }
 
-/* Custom glassmorphism and luxury styling */
+/* Warm Ivory & Emerald Green Glassmorphic Styling */
+.glass-panel-ivory {
+  background: rgba(245, 235, 215, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(4, 100, 56, 0.18);
+  box-shadow: 0 20px 40px -15px rgba(4, 100, 56, 0.12);
+}
+
 .glass-panel-dark {
   background: rgba(18, 18, 22, 0.72);
   backdrop-filter: blur(20px);
@@ -18,31 +26,29 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.glass-panel-light {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-/* Luxury button styling */
-.btn-luxury-dark {
-  background: #ffffff;
-  color: #0c0c0e;
+/* Luxury Emerald Buttons */
+.btn-emerald {
+  background: #046438;
+  color: #F5EBD7;
+  border: 1px solid #034a29;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.btn-luxury-dark:hover {
-  background: #e2e2e5;
+.btn-emerald:hover {
+  background: #034a29;
   transform: translateY(-1px);
+  box-shadow: 0 6px 20px -4px rgba(4, 100, 56, 0.35);
 }
 
-.btn-luxury-light {
-  background: #111111;
-  color: #ffffff;
+.btn-emerald-outline {
+  background: rgba(245, 235, 215, 0.5);
+  color: #046438;
+  border: 1px solid rgba(4, 100, 56, 0.28);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.btn-luxury-light:hover {
-  background: #2a2a2a;
+.btn-emerald-outline:hover {
+  background: #046438;
+  color: #F5EBD7;
+  border-color: #046438;
   transform: translateY(-1px);
 }
 
@@ -54,7 +60,6 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(140, 140, 140, 0.3);
+  background: rgba(4, 100, 56, 0.25);
   border-radius: 9999px;
 }
-

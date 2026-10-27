@@ -23,8 +23,8 @@ export default function BottomHUD({
         <div
           className={`w-full p-6 md:p-7 rounded-2xl border transition-all duration-500 shadow-2xl ${
             isDarkTheme
-              ? 'glass-panel-dark border-white/10 text-white shadow-black/60'
-              : 'glass-panel-light border-black/10 text-neutral-900 shadow-neutral-400/30'
+              ? 'glass-panel-dark border-white/15 text-[#F5EBD7] shadow-black/80'
+              : 'glass-panel-ivory border-[#046438]/20 text-[#046438] shadow-[#046438]/10'
           }`}
         >
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -32,35 +32,41 @@ export default function BottomHUD({
             <div className="space-y-1.5">
               <div className="flex items-center space-x-2">
                 <span className={`font-mono text-[10px] tracking-[0.25em] uppercase px-2 py-0.5 rounded border ${
-                  isDarkTheme ? 'border-amber-400/30 text-amber-300' : 'border-amber-700/30 text-amber-800'
+                  isDarkTheme 
+                    ? 'border-emerald-400/30 text-emerald-300 bg-emerald-950/40' 
+                    : 'border-[#046438]/30 text-[#046438] bg-[#046438]/8 font-medium'
                 }`}>
                   PIECE {activePiece.indexStr}
                 </span>
                 <span className={`font-mono text-[10px] tracking-widest uppercase ${
-                  isDarkTheme ? 'text-neutral-400' : 'text-neutral-500'
+                  isDarkTheme ? 'text-[#F5EBD7]/60' : 'text-[#046438]/70'
                 }`}>
                   {activePiece.fabric}
                 </span>
               </div>
-              <h2 className="font-serif text-xl md:text-2xl font-normal tracking-wide">
+              <h2 className="font-serif text-xl md:text-2xl font-medium tracking-wide">
                 {activePiece.title}
               </h2>
               <p className={`text-xs max-w-sm line-clamp-1 font-light ${
-                isDarkTheme ? 'text-neutral-400' : 'text-neutral-600'
+                isDarkTheme ? 'text-[#F5EBD7]/70' : 'text-[#046438]/80'
               }`}>
                 {activePiece.tagline}
               </p>
             </div>
 
             {/* Price & Explore Button */}
-            <div className="flex items-center justify-between md:flex-col md:items-end gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-white/10">
-              <span className="font-serif text-lg md:text-xl font-medium tracking-tight">
+            <div className={`flex items-center justify-between md:flex-col md:items-end gap-3 pt-2 md:pt-0 border-t md:border-t-0 ${
+              isDarkTheme ? 'border-white/10' : 'border-[#046438]/15'
+            }`}>
+              <span className="font-serif text-lg md:text-xl font-semibold tracking-tight">
                 {activePiece.priceFormatted}
               </span>
               <button
                 onClick={onExplore}
                 className={`group flex items-center space-x-2 px-5 py-2.5 rounded-full font-mono text-[11px] tracking-widest uppercase font-medium shadow-lg transition-all duration-300 ${
-                  isDarkTheme ? 'btn-luxury-dark' : 'btn-luxury-light'
+                  isDarkTheme
+                    ? 'bg-[#F5EBD7] text-[#046438] hover:bg-white'
+                    : 'bg-[#046438] text-[#F5EBD7] hover:bg-[#034a29] shadow-[#046438]/20'
                 }`}
               >
                 <span>EXPLORE PIECE</span>
@@ -84,8 +90,8 @@ export default function BottomHUD({
               activePieceIndex === 0
                 ? 'opacity-25 cursor-not-allowed border-transparent'
                 : isDarkTheme
-                ? 'glass-panel-dark border-white/15 text-white hover:border-white/40 hover:scale-105 active:scale-95'
-                : 'glass-panel-light border-black/15 text-black hover:border-black/40 hover:scale-105 active:scale-95'
+                ? 'glass-panel-dark border-white/20 text-[#F5EBD7] hover:border-white/50 hover:scale-105 active:scale-95'
+                : 'glass-panel-ivory border-[#046438]/25 text-[#046438] hover:border-[#046438]/60 hover:scale-105 active:scale-95'
             }`}
           >
             <ChevronLeft size={16} />
@@ -102,8 +108,8 @@ export default function BottomHUD({
                   aria-label={`Select piece ${p.number}`}
                   className={`transition-all duration-500 rounded-full ${
                     isActive
-                      ? `w-8 h-1.5 ${isDarkTheme ? 'bg-white' : 'bg-black'}`
-                      : `w-1.5 h-1.5 ${isDarkTheme ? 'bg-white/30 hover:bg-white/60' : 'bg-black/30 hover:bg-black/60'}`
+                      ? `w-8 h-1.5 ${isDarkTheme ? 'bg-[#F5EBD7]' : 'bg-[#046438]'}`
+                      : `w-1.5 h-1.5 ${isDarkTheme ? 'bg-white/30 hover:bg-white/60' : 'bg-[#046438]/30 hover:bg-[#046438]/60'}`
                   }`}
                 />
               );
@@ -119,8 +125,8 @@ export default function BottomHUD({
               activePieceIndex === PIECES.length - 1
                 ? 'opacity-25 cursor-not-allowed border-transparent'
                 : isDarkTheme
-                ? 'glass-panel-dark border-white/15 text-white hover:border-white/40 hover:scale-105 active:scale-95'
-                : 'glass-panel-light border-black/15 text-black hover:border-black/40 hover:scale-105 active:scale-95'
+                ? 'glass-panel-dark border-white/20 text-[#F5EBD7] hover:border-white/50 hover:scale-105 active:scale-95'
+                : 'glass-panel-ivory border-[#046438]/25 text-[#046438] hover:border-[#046438]/60 hover:scale-105 active:scale-95'
             }`}
           >
             <ChevronRight size={16} />
@@ -130,7 +136,7 @@ export default function BottomHUD({
         {/* Ambient Interaction Guide */}
         <span
           className={`font-mono text-[9px] tracking-[0.3em] uppercase mt-4 transition-colors duration-500 ${
-            isDarkTheme ? 'text-neutral-500' : 'text-neutral-400'
+            isDarkTheme ? 'text-[#F5EBD7]/50' : 'text-[#046438]/60 font-medium'
           }`}
         >
           DRAG TO ROTATE • SCROLL TO NAVIGATE
@@ -139,4 +145,3 @@ export default function BottomHUD({
     </div>
   );
 }
-
